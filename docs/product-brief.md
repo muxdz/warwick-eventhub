@@ -6,7 +6,7 @@ Many societies at the University of Warwick have different ways of posting their
 
 EventHub is meant to be used by societies as a one-stop place to advertise their events as they see fit. Societies should be posting their events, and we'll advertise it.
 
-Once students have signed up, we'll send them reminder emails about the event a couple hours or days before the event starts.
+In future iteartions, EventHub could also remind students about saved events before they begin.
 
 ## Target Users
 
@@ -44,6 +44,7 @@ Log in
 Create an event
 Edit/delete your own events
 Bookmark events
+Share event link
 Upload event image
 
 ## Non-MVP Features
@@ -52,6 +53,7 @@ payments
 event reminder notifications/email
 chat
 AI recommendations
+organiser analytics
 mobile application
 Kubernetes
 microservices
