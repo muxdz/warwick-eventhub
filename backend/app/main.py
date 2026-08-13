@@ -15,9 +15,9 @@ class EventCreate(BaseModel):
     location: str
 
 class EventUpdate(BaseModel):
-    title: str | None
-    society: str | None
-    location: str | None
+    title: str | None = None
+    society: str | None = None
+    location: str | None = None
 
 event1 = Event(
     id = 1,
@@ -75,4 +75,11 @@ def delete_event(event_id: int):
     raise HTTPException(status_code=404, detail="Event not found")
     
 @app.patch("/events/{event_id}", status_code=200)
-def 
+def update_event(event_id: int, event_data: EventUpdate):
+    for event in events:
+        if event.id == event_id:
+            updated_data = event_data.model_dump(exclude_unset=True)
+            updated_event = event.model_copy(update=updated_data)
+            events[event_id-1] = updated_event
+            return updated_event
+    raise HTTPException(status_code=404, detail="Event not found")
