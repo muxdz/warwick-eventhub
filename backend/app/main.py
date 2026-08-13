@@ -66,7 +66,7 @@ def create_event(event_data: EventCreate):
     events.append(new_event)
     return new_event
 
-@app.post("/events/{event_id}", status_code=200)
+@app.delete("/events/{event_id}", status_code=200)
 def delete_event(event_id: int):
     for event in events:
         if event.id == event_id:
