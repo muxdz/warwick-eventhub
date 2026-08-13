@@ -41,7 +41,7 @@ event3 = Event(
 )
 
 events = [event1, event2, event3]
-highest_id = 3
+highest_id = max((event.id for event in events), default=0)
 
 @app.get("/health")
 def get_health():
