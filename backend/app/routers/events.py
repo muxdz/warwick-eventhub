@@ -7,10 +7,6 @@ router = APIRouter(tags=["events"])
 
 highest_id = max((event.id for event in events), default=0)
 
-@router.get("/health")
-def get_health():
-    return {"status": "ok"}
-
 @router.get("/events", response_model=list[Event])
 def get_events():
     return events
@@ -47,6 +43,6 @@ def update_event(event_id: int, event_data: EventUpdate):
             existing_data.update(updated_data)
             updated_event = Event(**existing_data)
 
-            events[index] = update_event
+            events[index] = updated_event
             return updated_event
     raise HTTPException(status_code=404, detail="Event not found")
