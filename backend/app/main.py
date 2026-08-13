@@ -74,12 +74,15 @@ def delete_event(event_id: int):
             return {"message": "Event deleted"}
     raise HTTPException(status_code=404, detail="Event not found")
     
-@app.patch("/events/{event_id}", status_code=200)
+@app.patch("/events/{event_id}", response_model=Event, status_code=200)
 def update_event(event_id: int, event_data: EventUpdate):
-    for event in events:
+    for index, event in enumerate(events):
         if event.id == event_id:
             updated_data = event_data.model_dump(exclude_unset=True)
-            updated_event = event.model_copy(update=updated_data)
-            events[event_id-1] = updated_event
+            existing_data = event.model_dump()
+            existing_data.update(updated_data)
+            updated_event = Event(**existing_data)
+
+            events[index] = update_event
             return updated_event
     raise HTTPException(status_code=404, detail="Event not found")
