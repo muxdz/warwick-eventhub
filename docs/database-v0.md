@@ -44,7 +44,7 @@ Purpose: Stores all relevant events data
 Columns:
 - id
 - event_title
-- event_
+- event_location
 - society_id
 - created_at
 
