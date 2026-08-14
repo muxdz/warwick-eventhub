@@ -3,7 +3,7 @@ import pytest
 
 from app.main import app
 from app.schemas import Event
-from app.store import events as store
+from app import store
 
 client = TestClient(app)
 
@@ -13,14 +13,22 @@ def reset_events():
 
     store.events.extend([
         Event(
-            id=1,
-            name="Event 1",
-            description="Original description"
+            id = 1,
+            title = "Welcome Event",
+            society = "Society",
+            location = "Oculus"
         ),
         Event(
-            id=2,
-            name="Event 2",
-            description="Another description"
+            id = 2,
+            title = "Meet the Exec Event",
+            society = "Badminton Society",
+            location = "Oculus"
+        ),
+        Event(
+            id = 3,
+            title = "Painting Event",
+            society = "Painting Society",
+            location = "FAB"
         )
     ])
 
@@ -33,7 +41,7 @@ def test_get_events():
     response = client.get("/events")
     assert response.status_code == 200
 
-    data = response
+    data = response.json()
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -53,16 +61,18 @@ def test_get_event_not_found():
 
 def test_create_event():
     new_event = {
-        "name": "Test Event",
-        "description": "This is a test event"
+        "title": "Test Event",
+        "society": "Test Society",
+        "location": "Rootes"
     }
 
     response = client.post("/events", json=new_event)
     assert response.status_code == 201
 
     data = response.json()
-    assert data["name"] == "Test Event"
-    assert data["description"] == "This is a test event"
+    assert data["title"] == "Test Event"
+    assert data["society"] == "Test Society"
+    assert data["location"] == "Rootes"
     assert "id" in data
 
 
@@ -70,7 +80,7 @@ def test_create_event_validation_error():
     response = client.post(
         "/events",
         json={
-            "description": "This is a test event"
+            "title": "Test Title"
         }
     )
 
@@ -80,7 +90,7 @@ def test_update_event_partial():
     response = client.patch(
         "/events/1",
         json={
-            "name": "Updated Event"
+            "title": "Updated Event Title"
         }
     )
 
@@ -88,14 +98,14 @@ def test_update_event_partial():
 
     data = response.json()
 
-    assert data["name"] == "Updated Event"
-    assert data["description"] == "Original description"
+    assert data["title"] == "Updated Event Title"
+    assert data["society"] == "Society"
 
 def test_update_event_not_found():
     response = client.patch(
         "/events/999",
         json={
-            "name": "Updated Event"
+            "title": "Test Title"
         }
     )
 
@@ -109,6 +119,6 @@ def test_delete_event():
     assert response.status_code == 404
 
 def test_delete_event_not_found():
-    response = client.delete("/events/1")
+    response = client.delete("/events/999")
     assert response.status_code == 404
 
