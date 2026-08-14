@@ -26,7 +26,7 @@ def create_event(event_data: EventCreate):
     events.append(new_event)
     return new_event
 
-@router.delete("/events/{event_id}", status_code=200)
+@router.delete("/events/{event_id}", status_code=204)
 def delete_event(event_id: int):
     for event in events:
         if event.id == event_id:
