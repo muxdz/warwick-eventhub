@@ -101,6 +101,21 @@ def test_update_event_partial():
     assert data["title"] == "Updated Event Title"
     assert data["society"] == "Society"
 
+def test_update_no_change():
+    response = client.patch(
+        "/events/1",
+        json={
+            "title": None
+        }
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["title"] == "Welcome Event"
+    assert data["society"] == "Society"
+
 def test_update_event_not_found():
     response = client.patch(
         "/events/999",
@@ -121,4 +136,3 @@ def test_delete_event():
 def test_delete_event_not_found():
     response = client.delete("/events/999")
     assert response.status_code == 404
-
