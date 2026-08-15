@@ -5,7 +5,7 @@ Purpose: Stores all relevant user data
 
 Columns:
 - id
-- name
+- user_name
 - email
 - created_at
 - password_hash
@@ -45,6 +45,8 @@ Columns:
 - id
 - event_title
 - event_location
+- event_time
+- description
 - society_id
 - created_at
 
@@ -67,7 +69,7 @@ Columns:
 
 Primary key: user_id and society_id
 
-Foreign keys: user_id -> Users.id and event_id -> Events.id
+Foreign keys: user_id -> Users.id and society_id -> Societies.id
 
 Unique constraints: none
 
@@ -75,8 +77,8 @@ Relationships: many to many with societies and users
 
 # Event Bookmarks
 
-Table name: Event Bookmarks
-Purpose: Stores all relations between users and societies
+Table name: Bookmarks
+Purpose: Stores all relations between users and events
 
 Columns:
 - user_id
