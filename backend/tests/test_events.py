@@ -136,3 +136,18 @@ def test_delete_event():
 def test_delete_event_not_found():
     response = client.delete("/events/999")
     assert response.status_code == 404
+
+def test_update_after_deleting_lower_id():
+    response = client.delete("/events/2")
+    assert response.status_code == 204
+
+    response = client.patch(
+        "/events/3",
+        json = {
+            "title": "New title"
+        }
+    )
+    assert response.status_code == 200
+    
+    data = response.json()
+    assert data["title"] == "New title"
