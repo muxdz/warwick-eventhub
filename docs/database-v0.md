@@ -16,7 +16,7 @@ Foreign keys: none
 
 Unique constraints: email
 
-Relationships: many to many with societies and many to many with events
+Relationships: many to many with societies and many to many with events (bookmarks) and one to many with events (creation)
 
 # Society
 
@@ -59,7 +59,7 @@ Foreign keys: society_id -> Societies.id and created_by_user_id -> Users.id
 
 Unique constraints: none
 
-Relationships: many to many with users and many to one with societies
+Relationships: many to many with users (bookmarks) and many to one with societies and many to one with users (creation)
 
 # Society Memberships
 
