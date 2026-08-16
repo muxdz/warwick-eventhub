@@ -1,6 +1,6 @@
 from app.database import get_connection
 
-def get_events():
+def get_all_events():
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
