@@ -16,10 +16,11 @@ CREATE TABLE events (
     id BIGINT GENERATED ALWAYS AS IDENTITY primary key,
     event_title VARCHAR(200) NOT NULL,
     event_location VARCHAR(200) NOT NULL,
-    start_time TIMESTAMPTZ NOT NULL,
+    start_time TIMESTAMPTZ NOT NULL CREATE INDEX,
     end_time TIMESTAMPTZ,
+    CONSTRAINT (end_time > start_time OR end_time IS NULL)
     description VARCHAR(500), 
-    society_id BIGINT NOT NULL,
+    society_id BIGINT NOT NULL CREATE INDEX,
     created_at TIMESTAMPTZ NOT NULL default NOW(),
     created_by_user_id BIGINT NOT NULL,
     image_key VARCHAR(200),
@@ -37,6 +38,9 @@ CREATE TABLE memberships (
     user_id BIGINT NOT NULL,
     society_id BIGINT NOT NULL,
     role VARCHAR(100) NOT NULL,
+
+    CONSTRAINT valid_role
+        CHECK (role = "organiser" or role = "member" )
 
     FOREIGN KEY (user_id) 
         REFERENCES users (id) ON DELETE CASCADE,
