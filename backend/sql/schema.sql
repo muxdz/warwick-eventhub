@@ -16,11 +16,11 @@ CREATE TABLE events (
     id BIGINT GENERATED ALWAYS AS IDENTITY primary key,
     event_title VARCHAR(200) NOT NULL,
     event_location VARCHAR(200) NOT NULL,
-    start_time TIMESTAMPTZ NOT NULL CREATE INDEX,
+    start_time TIMESTAMPTZ NOT NULL,
     end_time TIMESTAMPTZ,
-    CONSTRAINT (end_time > start_time OR end_time IS NULL)
+    CONSTRAINT valid_end_time CHECK (end_time > start_time OR end_time IS NULL),
     description VARCHAR(500), 
-    society_id BIGINT NOT NULL CREATE INDEX,
+    society_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL default NOW(),
     created_by_user_id BIGINT NOT NULL,
     image_key VARCHAR(200),
@@ -40,7 +40,7 @@ CREATE TABLE memberships (
     role VARCHAR(100) NOT NULL,
 
     CONSTRAINT valid_role
-        CHECK (role = "organiser" or role = "member" )
+        CHECK (role IN ('organiser','memeber')),
 
     FOREIGN KEY (user_id) 
         REFERENCES users (id) ON DELETE CASCADE,
@@ -61,3 +61,21 @@ CREATE TABLE bookmarks (
         REFERENCES events (id) ON DELETE CASCADE
 );
 
+-- =========================
+-- Indexes
+-- =========================
+
+CREATE INDEX idx_events_society_id
+ON events (society_id);
+
+CREATE INDEX idx_events_start_time
+ON events (start_time);
+
+CREATE INDEX idx_events_created_by_user_id
+ON events (created_by_user_id);
+
+CREATE INDEX idx_bookmarks_event_id
+ON bookmarks (event_id);
+
+CREATE INDEX idx_memberships_society_id
+ON memberships (society_id);
