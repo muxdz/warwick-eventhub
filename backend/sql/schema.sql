@@ -40,7 +40,7 @@ CREATE TABLE memberships (
     role VARCHAR(100) NOT NULL,
 
     CONSTRAINT valid_role
-        CHECK (role IN ('organiser','memeber')),
+        CHECK (role IN ('organiser','member')),
 
     FOREIGN KEY (user_id) 
         REFERENCES users (id) ON DELETE CASCADE,
