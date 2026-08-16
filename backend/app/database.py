@@ -12,3 +12,9 @@ def get_connection():
         password=settings.db_password,
         row_factory=dict_row
     )
+
+with get_connection() as conn:
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM events;")
+        print(cur.fetchall())
+        
