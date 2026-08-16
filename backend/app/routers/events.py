@@ -13,12 +13,17 @@ highest_id = max((event.id for event in events), default=0)
 def get_events():
     return event_repository.get_all_events()
 
-@router.get("/events/{event_id}", response_model=Event)
+@router.get("/events/{event_id}")
 def get_event(event_id: int):
-    for event in events:
-        if event.id == event_id:
-            return event
-    raise HTTPException(status_code=404, detail="Event not found")
+    event = event_repository.get_event_by_id(event_id)
+
+    if event is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Event not found"
+        )
+
+    return event
 
 @router.post("/events", response_model=Event, status_code=201)
 def create_event(event_data: EventCreate):
