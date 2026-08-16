@@ -16,20 +16,27 @@ CREATE TABLE events (
     id BIGINT GENERATED ALWAYS AS IDENTITY primary key,
     event_title VARCHAR(200) NOT NULL,
     event_location VARCHAR(200) NOT NULL,
-    event_time TIMESTAMPTZ NOT NULL,
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ,
     description VARCHAR(500), 
     society_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL default NOW(),
+    created_by_user_id BIGINT NOT NULL,
+    image_key VARCHAR(200),
 
 
     FOREIGN KEY (society_id)
-        REFERENCES societies (id) ON DELETE CASCADE
+        REFERENCES societies (id) ON DELETE CASCADE,
+
+    FOREIGN KEY (created_by_user_id)
+        REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE memberships (
     PRIMARY KEY (user_id, society_id),
     user_id BIGINT NOT NULL,
     society_id BIGINT NOT NULL,
+    role VARCHAR(100) NOT NULL,
 
     FOREIGN KEY (user_id) 
         REFERENCES users (id) ON DELETE CASCADE,

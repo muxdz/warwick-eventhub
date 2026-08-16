@@ -45,14 +45,17 @@ Columns:
 - id
 - event_title
 - event_location
-- event_time
+- start_time
+- end_time
 - description
 - society_id
 - created_at
+- created_by_user_id
+- image_key
 
 Primary key: id
 
-Foreign keys: society_id -> Societies.id
+Foreign keys: society_id -> Societies.id and created_by_user_id -> Users.id
 
 Unique constraints: none
 
@@ -66,6 +69,7 @@ Purpose: Stores all the connections between users and societies
 Columns:
 - user_id
 - society_id
+- role
 
 Primary key: user_id and society_id
 
@@ -73,7 +77,7 @@ Foreign keys: user_id -> Users.id and society_id -> Societies.id
 
 Unique constraints: none
 
-Relationships: many to many with societies and users
+Relationships: junction table that implements the many to many relationship between users and socieites
 
 # Event Bookmarks
 
@@ -90,4 +94,4 @@ Foreign keys: user_id -> Users.id and event_id -> Events.id
 
 Unique constraints: none
 
-Relationships: many to many with events and users
+Relationships: implements the many to many relatioship with events and users
