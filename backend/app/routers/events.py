@@ -29,13 +29,17 @@ def get_event(event_id: int):
 def create_event(event_data: EventCreate):
     return event_repository.create_event(event_data)
 
-@router.delete("/events/{event_id}", status_code=204)
+@router.delete("/events/{event_id}")
 def delete_event(event_id: int):
-    for event in events:
-        if event.id == event_id:
-            events.remove(event)
-            return None
-    raise HTTPException(status_code=404, detail="Event not found")
+    deleted_event = event_repository.delete_event(event_id)
+
+    if deleted_event is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Event not found"
+        )
+
+    return {"message": "Event deleted"}
     
 @router.patch("/events/{event_id}", response_model=Event, status_code=200)
 def update_event(event_id: int, event_data: EventUpdate):
