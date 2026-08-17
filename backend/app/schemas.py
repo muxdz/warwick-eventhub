@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 class EventCreate(BaseModel):
     event_title: str
@@ -17,6 +17,17 @@ class EventUpdate(BaseModel):
     end_time: str | None = None
     description: str | None = None
     image_key: str | None = None
+
+    @field_validator(
+        "event_title",
+        "event_location",
+        "start_time",
+    )
+    @classmethod
+    def required_fields_cannot_be_null(cls, value):
+        if value is None:
+            raise ValueError("field cannot be null")
+        return value
 
 class Event(EventCreate):
     id: int
