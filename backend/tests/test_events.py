@@ -128,7 +128,9 @@ def test_update_event_not_found():
 
 def test_delete_event():
     response = client.delete("/events/1")
-    assert response.status_code == 204
+
+    data = response.json()
+    assert data["message"] == "Event deleted"
 
     response = client.get("/events/1")
     assert response.status_code == 404
