@@ -25,12 +25,9 @@ def get_event(event_id: int):
 
     return event
 
-@router.post("/events", response_model=Event, status_code=201)
+@router.post("/events", status_code=201)
 def create_event(event_data: EventCreate):
-    new_id = highest_id + 1
-    new_event = Event(id=highest_id, **event_data.model_dump())
-    events.append(new_event)
-    return new_event
+    return event_repository.create_event(event_data)
 
 @router.delete("/events/{event_id}", status_code=204)
 def delete_event(event_id: int):
