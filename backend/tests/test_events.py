@@ -5,32 +5,79 @@ from app.main import app
 from app.schemas import Event
 from app import store
 
+from app.database import get_connection
+
 client = TestClient(app)
+
+def seed_event(
+    cur,
+    title,
+    location,
+    society_id,
+    created_by_user_id,
+):
+    cur.execute(
+        """
+        INSERT INTO events (
+            event_title,
+            event_location,
+            start_time,
+            end_time,
+            description,
+            society_id,
+            created_by_user_id
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """,
+        (
+            title,
+            location,
+            "2026-10-10 10:00:00+01",
+            "2026-10-10 12:00:00+01",
+            "Test description",
+            society_id,
+            created_by_user_id
+        )
+    )
+
+def seed_society(cur, society_name):
+    cur.execute(
+        """
+        INSERT INTO societies (society_name)
+        VALUES (%s);
+        """,
+        (society_name,)
+    )
+
+def seed_user(cur, user_name, email):
+    cur.execute(
+        """
+        INSERT INTO users (user_name, email, password_hash)
+        VALUES (%s, %s, 'test_hash');
+        """,
+        (user_name, email)
+    )
 
 @pytest.fixture(autouse=True)
 def reset_events():
-    store.events.clear()
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                TRUNCATE TABLE events, societies, users 
+                RESTART IDENTITY CASCADE;
+                """
+            )
 
-    store.events.extend([
-        Event(
-            id = 1,
-            title = "Welcome Event",
-            society = "Society",
-            location = "Oculus"
-        ),
-        Event(
-            id = 2,
-            title = "Meet the Exec Event",
-            society = "Badminton Society",
-            location = "Oculus"
-        ),
-        Event(
-            id = 3,
-            title = "Painting Event",
-            society = "Painting Society",
-            location = "FAB"
-        )
-    ])
+            seed_user(cur, "Alice", "alice@example.com")
+            seed_user(cur, "Bob", "bob@example.com")
+
+            seed_society(cur, "Cloud Society")
+            seed_society(cur, "Engineering Society")
+
+            seed_event(cur, "Python", "Rootes", 1, 1)
+            seed_event(cur, "AWS", "FAB", 2, 2)
+            seed_event(cur, "Docker", "FAB", 1, 2)
 
 def test_health():
     response = client.get("/health")
@@ -61,18 +108,26 @@ def test_get_event_not_found():
 
 def test_create_event():
     new_event = {
-        "title": "Test Event",
-        "society": "Test Society",
-        "location": "Rootes"
+        "event_title": "Test Event",
+        "event_location": "Rootes",
+        "start_time": "2026-10-10 10:00:00+01",
+        "end_time": "2026-10-10 12:00:00+01",
+        "description": "Test description",
+        "society_id": 1,
+        "created_by_user_id": 1
     }
 
     response = client.post("/events", json=new_event)
     assert response.status_code == 201
 
     data = response.json()
-    assert data["title"] == "Test Event"
-    assert data["society"] == "Test Society"
-    assert data["location"] == "Rootes"
+    assert data["event_title"] == "Test Event"
+    assert data["event_location"] == "Rootes"
+    assert data["start_time"] == "2026-10-10T10:00:00+01:00"
+    assert data["end_time"] == "2026-10-10T12:00:00+01:00"
+    assert data["description"] == "Test description"
+    assert data["society_id"] == 1
+    assert data["created_by_user_id"] == 1
     assert "id" in data
 
 
@@ -80,7 +135,7 @@ def test_create_event_validation_error():
     response = client.post(
         "/events",
         json={
-            "title": "Test Title"
+            "event_title": "Test Title"
         }
     )
 
@@ -90,7 +145,7 @@ def test_update_event_partial():
     response = client.patch(
         "/events/1",
         json={
-            "title": "Updated Event Title"
+            "event_title": "Updated Event Title"
         }
     )
 
@@ -98,29 +153,36 @@ def test_update_event_partial():
 
     data = response.json()
 
-    assert data["title"] == "Updated Event Title"
-    assert data["society"] == "Society"
+    assert data["event_title"] == "Updated Event Title"
+    assert data["society_id"] == 1
 
 def test_update_no_change():
     response = client.patch(
         "/events/1",
+        json={}
+    )
+
+    assert response.status_code == 400
+
+def test_update_null():
+    response = client.patch(
+        "/events/1",
         json={
-            "title": None
+            "event_title": None
         }
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 422
 
     data = response.json()
+    assert data["detail"][0]["loc"][-1] == "event_title"
 
-    assert data["title"] == "Welcome Event"
-    assert data["society"] == "Society"
 
 def test_update_event_not_found():
     response = client.patch(
         "/events/999",
         json={
-            "title": "Test Title"
+            "event_title": "Test Title"
         }
     )
 
@@ -128,7 +190,9 @@ def test_update_event_not_found():
 
 def test_delete_event():
     response = client.delete("/events/1")
-    assert response.status_code == 204
+
+    data = response.json()
+    assert data["message"] == "Event deleted"
 
     response = client.get("/events/1")
     assert response.status_code == 404
@@ -139,15 +203,17 @@ def test_delete_event_not_found():
 
 def test_update_after_deleting_lower_id():
     response = client.delete("/events/2")
-    assert response.status_code == 204
+    data = response.json()
+
+    assert data["message"] == "Event deleted"
 
     response = client.patch(
         "/events/3",
         json = {
-            "title": "New title"
+            "event_title": "New title"
         }
     )
     assert response.status_code == 200
     
     data = response.json()
-    assert data["title"] == "New title"
+    assert data["event_title"] == "New title"

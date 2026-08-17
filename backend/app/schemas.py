@@ -1,17 +1,33 @@
-from pydantic import BaseModel
-
-class Event(BaseModel):
-    id: int
-    title: str
-    society: str
-    location: str
+from pydantic import BaseModel, field_validator
 
 class EventCreate(BaseModel):
-    title: str
-    society: str
-    location: str
+    event_title: str
+    event_location: str
+    start_time: str
+    end_time: str | None = None
+    description: str | None = None
+    society_id: int
+    created_by_user_id: int
+    image_key: str | None = None
 
 class EventUpdate(BaseModel):
-    title: str | None = None
-    society: str | None = None
-    location: str | None = None
+    event_title: str | None = None
+    event_location: str | None = None
+    start_time: str | None = None
+    end_time: str | None = None
+    description: str | None = None
+    image_key: str | None = None
+
+    @field_validator(
+        "event_title",
+        "event_location",
+        "start_time",
+    )
+    @classmethod
+    def required_fields_cannot_be_null(cls, value):
+        if value is None:
+            raise ValueError("field cannot be null")
+        return value
+
+class Event(EventCreate):
+    id: int

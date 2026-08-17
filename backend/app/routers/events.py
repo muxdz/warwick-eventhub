@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
+from app.repositories import events as event_repository
+
 from app.schemas import Event, EventCreate, EventUpdate
 from app.store import events
 
@@ -7,44 +9,54 @@ router = APIRouter(tags=["events"])
 
 highest_id = max((event.id for event in events), default=0)
 
-@router.get("/events", response_model=list[Event])
+@router.get("/events")
 def get_events():
-    return events
+    return event_repository.get_all_events()
 
-@router.get("/events/{event_id}", response_model=Event)
+@router.get("/events/{event_id}")
 def get_event(event_id: int):
-    for event in events:
-        if event.id == event_id:
-            return event
-    raise HTTPException(status_code=404, detail="Event not found")
+    event = event_repository.get_event_by_id(event_id)
 
-@router.post("/events", response_model=Event, status_code=201)
+    if event is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Event not found"
+        )
+
+    return event
+
+@router.post("/events", status_code=201)
 def create_event(event_data: EventCreate):
-    new_id = highest_id + 1
-    new_event = Event(id=highest_id, **event_data.model_dump())
-    events.append(new_event)
-    return new_event
+    return event_repository.create_event(event_data)
 
-@router.delete("/events/{event_id}", status_code=204)
+@router.delete("/events/{event_id}")
 def delete_event(event_id: int):
-    for event in events:
-        if event.id == event_id:
-            events.remove(event)
-            return None
-    raise HTTPException(status_code=404, detail="Event not found")
-    
-@router.patch("/events/{event_id}", response_model=Event, status_code=200)
-def update_event(event_id: int, event_data: EventUpdate):
-    for index, event in enumerate(events):
-        if event.id == event_id:
-            updated_data = event_data.model_dump(
-                exclude_unset=True,
-                exclude_none=True
-                )
-            existing_data = event.model_dump()
-            existing_data.update(updated_data)
-            updated_event = Event(**existing_data)
+    deleted_event = event_repository.delete_event(event_id)
 
-            events[index] = updated_event
-            return updated_event
-    raise HTTPException(status_code=404, detail="Event not found")
+    if deleted_event is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Event not found"
+        )
+
+    return {"message": "Event deleted"}
+    
+@router.patch("/events/{event_id}", status_code=200)
+def update_event(event_id: int, event_data: EventUpdate):
+    updates = event_data.model_dump(exclude_unset=True)
+
+    if not updates:
+        raise HTTPException(
+            status_code=400,
+            detail="No updates provided"
+        )
+
+    updated_event = event_repository.update_event(event_id, updates)
+
+    if updated_event is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Event not found"
+        )
+
+    return updated_event
