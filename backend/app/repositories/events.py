@@ -55,11 +55,13 @@ def create_event(event_data):
                     created_by_user_id;
                 """,
                 (
-                    event_data.title,
-                    event_data.society,
-                    event_data.location,
+                    event_data.event_title,
+                    event_data.event_location,
                     event_data.start_time,
-                    event_data.end_time
+                    event_data.end_time,
+                    event_data.description,
+                    event_data.society_id,
+                    event_data.created_by_user_id
                 )
             )
 

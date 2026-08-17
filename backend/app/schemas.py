@@ -7,9 +7,13 @@ class Event(BaseModel):
     location: str
 
 class EventCreate(BaseModel):
-    title: str
-    society: str
-    location: str
+    event_title: str
+    event_location: str
+    start_time: str
+    end_time: str | None = None
+    description: str | None = None
+    society_id: int
+    created_by_user_id: int
 
 class EventUpdate(BaseModel):
     title: str | None = None
