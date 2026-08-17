@@ -41,18 +41,22 @@ def delete_event(event_id: int):
 
     return {"message": "Event deleted"}
     
-@router.patch("/events/{event_id}", response_model=Event, status_code=200)
+@router.patch("/events/{event_id}", status_code=200)
 def update_event(event_id: int, event_data: EventUpdate):
-    for index, event in enumerate(events):
-        if event.id == event_id:
-            updated_data = event_data.model_dump(
-                exclude_unset=True,
-                exclude_none=True
-                )
-            existing_data = event.model_dump()
-            existing_data.update(updated_data)
-            updated_event = Event(**existing_data)
+    updates = event_data.model_dump(exclude_unset=True)
 
-            events[index] = updated_event
-            return updated_event
-    raise HTTPException(status_code=404, detail="Event not found")
+    if not updates:
+        raise HTTPException(
+            status_code=400,
+            detail="No updates provided"
+        )
+
+    updated_event = event_repository.update_event(event_id, updates)
+
+    if updated_event is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Event not found"
+        )
+
+    return updated_event

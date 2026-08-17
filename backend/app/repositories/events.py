@@ -1,5 +1,7 @@
 from app.database import get_connection
 
+from app.schemas import EventUpdate
+
 def get_all_events():
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -77,6 +79,31 @@ def delete_event(event_id: int):
                 RETURNING id;
                 """,
                 (event_id,)
+            )
+
+            return cur.fetchone()
+
+def update_event(event_id: int, event_updates):
+
+    update_parts = [f"{field} = %s" for field in event_updates]
+    update_clause = ", ".join(update_parts)
+
+    values = list(event_updates.values())
+    values.append(event_id)
+  
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                UPDATE events
+                SET {update_clause}
+                WHERE id = %s
+                RETURNING *;
+                """,
+                (
+                    values
+                )
             )
 
             return cur.fetchone()
