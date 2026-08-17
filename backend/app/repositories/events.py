@@ -67,4 +67,16 @@ def create_event(event_data):
 
             return cur.fetchone()
 
-        
+def delete_event(event_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                DELETE FROM events
+                WHERE id = %s
+                RETURNING id;
+                """,
+                (event_id,)
+            )
+
+            return cur.fetchone()
