@@ -2,8 +2,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from app.main import app
-from app.schemas import Event
-from app import store
+from datetime import datetime
 
 from app.database import get_connection
 
@@ -120,11 +119,19 @@ def test_create_event():
     response = client.post("/events", json=new_event)
     assert response.status_code == 201
 
+
     data = response.json()
     assert data["event_title"] == "Test Event"
     assert data["event_location"] == "Rootes"
-    assert data["start_time"] == "2026-10-10T10:00:00+01:00"
-    assert data["end_time"] == "2026-10-10T12:00:00+01:00"
+
+    expected = datetime.fromisoformat("2026-10-10 10:00:00+01")
+    actual = datetime.fromisoformat(data["start_time"])
+    assert expected == actual
+
+    expected = datetime.fromisoformat("2026-10-10 12:00:00+01")
+    actual = datetime.fromisoformat(data["end_time"])
+    assert expected == actual
+  
     assert data["description"] == "Test description"
     assert data["society_id"] == 1
     assert data["created_by_user_id"] == 1
