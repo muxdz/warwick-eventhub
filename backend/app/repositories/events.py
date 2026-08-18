@@ -1,7 +1,5 @@
 from app.database import get_connection
 
-from app.schemas import EventUpdate
-
 def get_all_events():
     with get_connection() as conn:
         with conn.cursor() as cur:

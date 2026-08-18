@@ -28,6 +28,3 @@ class EventUpdate(BaseModel):
         if value is None:
             raise ValueError("field cannot be null")
         return value
-
-class Event(EventCreate):
-    id: int
