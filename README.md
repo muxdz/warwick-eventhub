@@ -49,6 +49,12 @@ This will include:
 3. A page to create a society
 4. A page to add events
 
+Current API and db image content sizes:
+API: 451MB, db: 162MB
+
+Current API and db image disk usage:
+API: 1.74GB, db: 650MB
+
 
 # Current Workflow
 
