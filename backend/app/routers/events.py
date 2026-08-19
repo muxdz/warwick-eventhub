@@ -2,12 +2,9 @@ from fastapi import APIRouter, HTTPException
 
 from app.repositories import events as event_repository
 
-from app.schemas import Event, EventCreate, EventUpdate
-from app.store import events
+from app.schemas import EventCreate, EventUpdate
 
 router = APIRouter(tags=["events"])
-
-highest_id = max((event.id for event in events), default=0)
 
 @router.get("/events")
 def get_events():
