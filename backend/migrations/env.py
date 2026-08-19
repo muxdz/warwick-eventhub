@@ -1,9 +1,13 @@
+import os
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
-from sqlalchemy import pool
 
 from alembic import context
+from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
+from sqlalchemy import pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,6 +28,16 @@ target_metadata = None
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+def get_database_url():
+    return URL.create(
+        drivername="postgresql+psycopg",
+        username=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        host=os.environ["DB_HOST"],
+        port=int(os.environ.get("DB_PORT", "5432")),
+        database=os.environ["DB_NAME"],
+    )
 
 
 def run_migrations_offline() -> None:
@@ -46,8 +60,16 @@ def run_migrations_offline() -> None:
         dialect_opts={"paramstyle": "named"},
     )
 
-    with context.begin_transaction():
-        context.run_migrations()
+    connectable = create_engine(
+        get_database_url(),
+        poolclass=pool.NullPool,
+    )
+
+    with connectable.connect() as connection:
+        context.configure(connection=connection)
+
+        with context.begin_transaction():
+            context.run_migrations()
 
 
 def run_migrations_online() -> None:
