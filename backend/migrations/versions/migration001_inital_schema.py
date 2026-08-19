@@ -19,7 +19,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Upgrade schema."""
     op.create_table(
         "users",
         sa.Column("id", sa.Integer, primary_key=True),
@@ -72,6 +71,7 @@ def upgrade() -> None:
         "memberships",
         sa.Column("user_id", sa.Integer, nullable=False),
         sa.Column("society_id", sa.Integer, nullable=False),
+        sa.Column("role", sa.String(100), nullable=False),
 
         sa.PrimaryKeyConstraint(
             "user_id", 
@@ -152,4 +152,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Downgrade schema."""
-    pass
+    op.drop_table("bookmarks")
+    op.drop_table("memberships")
+    op.drop_table("events")
+    op.drop_table("societies")
+    op.drop_table("users")
+
