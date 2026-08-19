@@ -41,7 +41,7 @@ def upgrade() -> None:
         sa.Column("event_title", sa.String(200), nullable=False),
         sa.Column("event_location", sa.String(200), nullable=False),
         sa.Column("start_time", sa.TIMESTAMP(timezone=True), nullable=False),
-        sa.Column("end_time", sa.TIMESTAMP),
+        sa.Column("end_time", sa.TIMESTAMP(timezone=True)),
         sa.Column("description", sa.String(500)),
         sa.Column("society_id", sa.Integer, nullable=False),
         sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.func.now()),
