@@ -2,8 +2,6 @@ import os
 
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-
 from alembic import context
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
@@ -60,16 +58,8 @@ def run_migrations_offline() -> None:
         dialect_opts={"paramstyle": "named"},
     )
 
-    connectable = create_engine(
-        get_database_url(),
-        poolclass=pool.NullPool,
-    )
-
-    with connectable.connect() as connection:
-        context.configure(connection=connection)
-
-        with context.begin_transaction():
-            context.run_migrations()
+    with context.begin_transaction():
+        context.run_migrations()
 
 
 def run_migrations_online() -> None:
@@ -79,9 +69,8 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
+    connectable = create_engine(
+        get_database_url(),
         poolclass=pool.NullPool,
     )
 
