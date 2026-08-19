@@ -107,7 +107,7 @@ def upgrade() -> None:
             "user_id", 
             "event_id",
             name="pk_bookmarks"
-        )
+        ),
 
         sa.ForeignKeyConstraint(
             ["user_id"],
@@ -121,7 +121,32 @@ def upgrade() -> None:
             ondelete="CASCADE",
             onupdate="CASCADE"
         )
+    )
 
+    op.create_index(
+        "idx_events_society_id",
+        "events",
+        ["society_id"],
+    )
+    op.create_index(
+        "idx_events_start_time",
+        "events",
+        ["start_time"],
+    )
+    op.create_index(
+        "idx_events_created_by_user_id",
+        "events",
+        ["created_by_user_id"],
+    )
+    op.create_index(
+        "idx_bookmarks_event_id",
+        "bookmarks",
+        ["event_id"],
+    )
+    op.create_index(
+        "idx_memberships_society_id",
+        "memberships",
+        ["society_id"],
     )
 
 
