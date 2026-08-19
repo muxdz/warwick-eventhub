@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("user_name", sa.String(50), nullable=False),
         sa.Column("email", sa.String(255), nullable=False, unique=True),
-        sa.Column("created_at", sa.TIMESTAMP, nullable=False, server_default=sa.func.now()),
+        sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.Column("password_hash", sa.Text, nullable=False)
     )
 
@@ -32,7 +32,7 @@ def upgrade() -> None:
         "societies",
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("society_name", sa.String(100), nullable=False, unique=True),
-        sa.Column("created_at", sa.TIMESTAMP, nullable=False, server_default=sa.func.now())
+        sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.func.now())
     )
 
     op.create_table(
@@ -40,11 +40,11 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("event_title", sa.String(200), nullable=False),
         sa.Column("event_location", sa.String(200), nullable=False),
-        sa.Column("start_time", sa.TIMESTAMP, nullable=False),
+        sa.Column("start_time", sa.TIMESTAMP(timezone=True), nullable=False),
         sa.Column("end_time", sa.TIMESTAMP),
         sa.Column("description", sa.String(500)),
         sa.Column("society_id", sa.Integer, nullable=False),
-        sa.Column("created_at", sa.TIMESTAMP, nullable=False, server_default=sa.func.now()),
+        sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.Column("created_by_user_id", sa.Integer, nullable=False),
         sa.Column("image_key", sa.String(200)),
 
