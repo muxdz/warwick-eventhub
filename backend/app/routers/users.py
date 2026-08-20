@@ -32,3 +32,15 @@ def create_user(user_data: UserCreate):
     password_hash = user_data.password + "test_hash"
 
     return user_repository.create_user(user_data, password_hash)
+
+@users_router.delete("/users/{user_id}")
+def delete_user(user_id: int):
+    deleted_user = user_repository.delete_user(user_id)
+
+    if not deleted_user:
+        raise HTTPException(
+            status_code=404, 
+            detail="User not found"
+        )
+
+    return {"message": "User deleted"}
