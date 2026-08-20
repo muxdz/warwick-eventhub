@@ -70,7 +70,7 @@ def test_create_user_already_exists():
         "/users",
         json={
             "user_name": "Alice",
-            "email": "Alice@example.com",
+            "email": "alice@example.com",
             "password": "test_password"
         }
     )
