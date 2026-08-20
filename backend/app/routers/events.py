@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.repositories import events as event_repository
 
-from app.schemas import EventCreate, EventUpdate
+from app.schemas.events import EventCreate, EventUpdate
 
 events_router = APIRouter(tags=["events"])
 
