@@ -12,11 +12,27 @@ def get_all_users():
 
 @users_router.get("/users/{user_id}")
 def get_user_by_id(user_id: int):
-    return user_repository.get_user_by_id(user_id)
+    user = user_repository.get_user_by_id(user_id)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return user
 
 @users_router.get("/users/email/{email}")
 def get_user_by_email(email: str):
-    return user_repository.get_user_by_email(email)
+    user = user_repository.get_user_by_email(email)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return user
 
 @users_router.post("/users", status_code=201)
 def create_user(user_data: UserCreate):
