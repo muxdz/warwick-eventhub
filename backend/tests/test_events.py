@@ -1,10 +1,7 @@
 from fastapi.testclient import TestClient
-import pytest
 
 from app.main import app
 from datetime import datetime
-
-from tests.conftest import reset_db
 
 client = TestClient(app)
 
