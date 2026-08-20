@@ -71,7 +71,7 @@ def update_user(user_id: int, user_data: UserUpdate):
             detail="No updates provided"
         )
 
-    updated_user = user_repository.update_user(user_id)
+    updated_user = user_repository.update_user(user_id, updates)
 
     if updated_user is None:
         raise HTTPException(
