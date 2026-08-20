@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.repositories import users as user_repository
 
-from app.schemas.users import UserCreate
+from app.schemas.users import UserCreate, UserUpdate
 
 users_router = APIRouter(tags=["users"])
 
@@ -44,3 +44,23 @@ def delete_user(user_id: int):
         )
 
     return {"message": "User deleted"}
+
+@users_router.patch("/users/{user_id}", status_code=200)
+def update_user(user_id: int, user_data: UserUpdate):
+    updates = user_data.model_dump(exclude_unset=True)
+
+    if not updates:
+        raise HTTPException(
+            status_code=400,
+            detail="No updates provided"
+        )
+
+    updated_user = user_repository.update_user(user_id)
+
+    if updated_user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return updated_user
