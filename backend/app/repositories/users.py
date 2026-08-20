@@ -65,3 +65,17 @@ def create_user(user_data, password_hash):
             )
 
             return cur.fetchone()
+
+def delete_user(user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                DELETE FROM users
+                WHERE id = %s
+                RETURNING id;
+                """,
+                (user_id,)
+            )
+
+            return cur.fetchone()
