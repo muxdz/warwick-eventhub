@@ -41,9 +41,10 @@ def create_event(event_data):
                     end_time,
                     description,
                     society_id,
-                    created_by_user_id
+                    created_by_user_id,
+                    image_key
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING 
                     id,
                     event_title,
@@ -52,7 +53,8 @@ def create_event(event_data):
                     end_time,
                     description,
                     society_id,
-                    created_by_user_id;
+                    created_by_user_id,
+                    image_key;
                 """,
                 (
                     event_data.event_title,
@@ -61,7 +63,8 @@ def create_event(event_data):
                     event_data.end_time,
                     event_data.description,
                     event_data.society_id,
-                    event_data.created_by_user_id
+                    event_data.created_by_user_id,
+                    event_data.image_key
                 )
             )
 
@@ -84,6 +87,7 @@ def delete_event(event_id: int):
 def update_event(event_id: int, event_updates):
 
     update_parts = [f"{field} = %s" for field in event_updates]
+    update_parts.append("updated_at = NOW()")
     update_clause = ", ".join(update_parts)
 
     values = list(event_updates.values())

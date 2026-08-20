@@ -6,10 +6,10 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - .env.test
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   db:
     image: postgres:18
@@ -21,13 +21,54 @@ services:
       - "5433:5432"
     volumes:
       - postgresql:/var/lib/postgresql/
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  tests:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: python -m pytest -v
+    env_file:
+      - .env.test
+    depends_on:
+      db-test:
+        condition: service_healthy
+
+  db-test:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: eventhub_test
+    volumes:
+      - postgresql_test:/var/lib/postgresql/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d eventhub_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: ./backend
+
+    command: alembic upgrade head
+
+    env_file:
+      - .env.test
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    restart: "no"
+
 volumes:
   postgresql:
+    external: false
+  postgresql_test:
     external: false
