@@ -79,3 +79,26 @@ def delete_user(user_id: int):
             )
 
             return cur.fetchone()
+
+def update_user(user_id: int, user_updates):
+    update_parts = [f"{field} = %s" for field in user_updates]
+    update_clause = ", ".join(update_parts)
+    
+    values = list(user_updates.values())
+    values.append(user_id)
+
+    with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"""
+                    UPDATE users
+                    SET {update_clause}
+                    WHERE id = %s
+                    RETURNING *;
+                    """,
+                    (
+                        values
+                    )
+                )
+    
+                return cur.fetchone()
