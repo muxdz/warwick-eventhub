@@ -149,6 +149,11 @@ def test_create_event_validation_error():
     assert response.status_code == 422
 
 def test_update_event_partial():
+    original_event = client.get("/events/1").json()
+
+    og_updated_at = original_event["updated_at"]
+    before = datetime.fromisoformat(og_updated_at)
+
     response = client.patch(
         "/events/1",
         json={
@@ -162,6 +167,7 @@ def test_update_event_partial():
 
     assert data["event_title"] == "Updated Event Title"
     assert data["society_id"] == 1
+    assert datetime.fromisoformat(data["updated_at"]) > before
 
 def test_update_no_change():
     response = client.patch(
@@ -172,6 +178,11 @@ def test_update_no_change():
     assert response.status_code == 400
 
 def test_update_null():
+    original_event = client.get("/events/1").json()
+
+    og_updated_at = original_event["updated_at"]
+    before = datetime.fromisoformat(og_updated_at)
+
     response = client.patch(
         "/events/1",
         json={
