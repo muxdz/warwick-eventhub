@@ -4,7 +4,7 @@ class SocietyCreate(BaseModel):
     society_name: str
 
 class SocietyUpdate(BaseModel):
-    society_name: str
+    society_name: str | None = None
 
     @field_validator(
             "society_name",
