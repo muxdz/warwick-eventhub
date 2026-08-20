@@ -1,5 +1,49 @@
 from app.database import get_connection
 
+def get_all_users():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 
+                    *
+                FROM users;
+                """
+            )
+                
+            return cur.fetchall()
+
+def get_user_by_id(user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 
+                    *
+                FROM users
+                WHERE id = %s;
+                """,
+                (user_id,)
+            )
+
+            return cur.fetchone()
+
+def get_user_by_email(email: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 
+                    *
+                FROM users
+                WHERE email = %s;
+                """,
+                (email,)
+            )
+
+            return cur.fetchone()
+
+
 def create_user(user_data, password_hash):
     with get_connection() as conn:
         with conn.cursor() as cur:
