@@ -1,12 +1,17 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.security import OAuth2PasswordBearer, Depends
 
 from app.repositories import users as user_repository
 
 from app.schemas.users import UserCreate, UserUpdate, UserResponse
 
-from app.security import hash_password, verify_password
+from app.security import hash_password, verify_password, get_current_user
 
 users_router = APIRouter(tags=["users"])
+
+@users_router.get("/users/me")
+def get_me(current_user: UserResponse = Depends(get_current_user)):
+    return current_user
 
 @users_router.get("/users")
 def get_all_users():
