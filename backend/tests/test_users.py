@@ -42,7 +42,7 @@ def test_get_user_by_email_not_found():
 
 def test_create_user():
     response = client.post(
-        "/users",
+        "/auth/register",
         json={
             "user_name": "test_username",
             "email": "test@example.com",
@@ -54,10 +54,12 @@ def test_create_user():
     assert response.status_code == 201
     assert data["user_name"] == "test_username"
     assert data["email"] == "test@example.com"
+    assert "password" not in data
+    assert "password_hash" not in data
 
 def test_create_user_missing_values():
     response = client.post(
-        "/users",
+        "/auth/register",
         json={
             "user_name": "test_username"
         }
@@ -67,7 +69,7 @@ def test_create_user_missing_values():
 
 def test_create_user_already_exists():
     response = client.post(
-        "/users",
+        "/auth/register",
         json={
             "user_name": "Alice",
             "email": "alice@example.com",

@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, field_validator
+from datetime import datetime
 
 class UserCreate(BaseModel):
     user_name: str
@@ -9,7 +10,7 @@ class UserResponse(BaseModel):
     id: int
     user_name: str
     email: EmailStr
-    created_at: str
+    created_at: datetime
 
 class UserUpdate(BaseModel):
     user_name: str | None = None
