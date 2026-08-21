@@ -5,6 +5,12 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
+class UserResponse(BaseModel):
+    id: int
+    user_name: str
+    email: EmailStr
+    created_at: str
+
 class UserUpdate(BaseModel):
     user_name: str | None = None
     email: EmailStr | None = None
