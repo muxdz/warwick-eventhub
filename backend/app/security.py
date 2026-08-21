@@ -8,7 +8,7 @@ password_hash = PasswordHash.recommended()
 
 algorithm = "HS256"
 secret_key = settings.jwt_secret_key
-minutes = settings.jwt_expire_minutes
+minutes = int(settings.jwt_expire_minutes)
 
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
@@ -26,3 +26,6 @@ def create_access_token(user_id: int) -> str:
 
     token = jwt.encode(payload, secret_key, algorithm=algorithm)
     return token
+
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(token, secret_key, algorithms=[algorithm])
