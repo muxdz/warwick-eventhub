@@ -2,15 +2,34 @@ from fastapi import APIRouter, HTTPException
 
 from app.repositories import events as event_repository
 
-from app.schemas import EventCreate, EventUpdate
+from app.schemas.events import EventCreate, EventUpdate
 
-router = APIRouter(tags=["events"])
+from datetime import datetime
 
-@router.get("/events")
-def get_events():
-    return event_repository.get_all_events()
+events_router = APIRouter(tags=["events"])
 
-@router.get("/events/{event_id}")
+@events_router.get("/events")
+def get_events(
+    society_id : int | None = None,
+    start_after: datetime | None = None,
+    search: str | None = None
+    ):
+
+    event = event_repository.get_all_events(
+        society_id=society_id,
+        start_after=start_after,
+        search=search
+    )
+
+    if len(event) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="No events found"
+        )
+
+    return event
+
+@events_router.get("/events/{event_id}")
 def get_event(event_id: int):
     event = event_repository.get_event_by_id(event_id)
 
@@ -22,11 +41,11 @@ def get_event(event_id: int):
 
     return event
 
-@router.post("/events", status_code=201)
+@events_router.post("/events", status_code=201)
 def create_event(event_data: EventCreate):
     return event_repository.create_event(event_data)
 
-@router.delete("/events/{event_id}")
+@events_router.delete("/events/{event_id}")
 def delete_event(event_id: int):
     deleted_event = event_repository.delete_event(event_id)
 
@@ -38,7 +57,7 @@ def delete_event(event_id: int):
 
     return {"message": "Event deleted"}
     
-@router.patch("/events/{event_id}", status_code=200)
+@events_router.patch("/events/{event_id}", status_code=200)
 def update_event(event_id: int, event_data: EventUpdate):
     updates = event_data.model_dump(exclude_unset=True)
 

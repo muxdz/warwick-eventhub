@@ -55,6 +55,9 @@ API: 451MB, db: 162MB
 Current API and db image disk usage:
 API: 1.74GB, db: 650MB
 
+- Events only pytest
+Count: 13
+Execution Time: 0.8s
 
 # Current Workflow
 

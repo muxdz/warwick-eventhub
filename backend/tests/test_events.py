@@ -1,82 +1,9 @@
 from fastapi.testclient import TestClient
-import pytest
 
 from app.main import app
 from datetime import datetime
 
-from app.database import get_connection
-
 client = TestClient(app)
-
-def seed_event(
-    cur,
-    title,
-    location,
-    society_id,
-    created_by_user_id,
-):
-    cur.execute(
-        """
-        INSERT INTO events (
-            event_title,
-            event_location,
-            start_time,
-            end_time,
-            description,
-            society_id,
-            created_by_user_id
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
-        """,
-        (
-            title,
-            location,
-            "2026-10-10 10:00:00+01",
-            "2026-10-10 12:00:00+01",
-            "Test description",
-            society_id,
-            created_by_user_id
-        )
-    )
-
-def seed_society(cur, society_name):
-    cur.execute(
-        """
-        INSERT INTO societies (society_name)
-        VALUES (%s);
-        """,
-        (society_name,)
-    )
-
-def seed_user(cur, user_name, email):
-    cur.execute(
-        """
-        INSERT INTO users (user_name, email, password_hash)
-        VALUES (%s, %s, 'test_hash');
-        """,
-        (user_name, email)
-    )
-
-@pytest.fixture(autouse=True)
-def reset_events():
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                TRUNCATE TABLE events, societies, users 
-                RESTART IDENTITY CASCADE;
-                """
-            )
-
-            seed_user(cur, "Alice", "alice@example.com")
-            seed_user(cur, "Bob", "bob@example.com")
-
-            seed_society(cur, "Cloud Society")
-            seed_society(cur, "Engineering Society")
-
-            seed_event(cur, "Python", "Rootes", 1, 1)
-            seed_event(cur, "AWS", "FAB", 2, 2)
-            seed_event(cur, "Docker", "FAB", 1, 2)
 
 def test_health():
     response = client.get("/health")
@@ -91,8 +18,53 @@ def test_get_events():
     assert isinstance(data, list)
     assert len(data) > 0
 
+def test_get_events_by_society():
+    response = client.get("/events?society_id=1")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 2
+
+def test_get_events_by_society_not_found():
+    response = client.get("/events?society_id=999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No events found"
+
+def test_get_events_by_start_after():
+    response = client.get("/events?start_after=2026-09-10 10:00:00")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 3
+
+def test_get_events_by_start_not_found():
+    response = client.get("/events?start_after=2026-11-10 13:00:00")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No events found"
+
+def test_get_events_by_search_title():
+    response = client.get("/events?search=Python")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+
+def test_get_events_by_search_description():
+    response = client.get("/events?search=Test")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 3
+
+def test_get_events_by_search_not_found():
+    response = client.get("/events?search=eventthatdoesntexist")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No events found"
+
 def test_get_event():
-    
     response = client.get("/events/1")
     assert response.status_code == 200
 
