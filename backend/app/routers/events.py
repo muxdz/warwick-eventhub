@@ -15,11 +15,19 @@ def get_events(
     search: str | None = None
     ):
 
-    return event_repository.get_all_events(
+    event = event_repository.get_all_events(
         society_id=society_id,
         start_after=start_after,
         search=search
     )
+
+    if len(event) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="No events found"
+        )
+
+    return event
 
 @events_router.get("/events/{event_id}")
 def get_event(event_id: int):
