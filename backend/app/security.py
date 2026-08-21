@@ -1,5 +1,5 @@
-from fastapi import HTTPException
-from fastapi.security import OAuth2PasswordBearer, Depends
+from fastapi import HTTPException, Depends
+from fastapi.security import OAuth2PasswordBearer
 
 from pwdlib import PasswordHash
 from app.config import settings
