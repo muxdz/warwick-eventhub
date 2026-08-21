@@ -18,8 +18,53 @@ def test_get_events():
     assert isinstance(data, list)
     assert len(data) > 0
 
+def test_get_events_by_society():
+    response = client.get("/events?society_id=1")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 2
+
+def test_get_events_by_society_not_found():
+    response = client.get("/events?society_id=999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No events found"
+
+def test_get_events_by_start_after():
+    response = client.get("/events?start_after=2026-09-10 10:00:00")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 3
+
+def test_get_events_by_start_not_found():
+    response = client.get("/events?start_after=2026-11-10 13:00:00")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No events found"
+
+def test_get_events_by_search_title():
+    response = client.get("/events?search=Python")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+
+def test_get_events_by_search_description():
+    response = client.get("/events?search=Test")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 3
+
+def test_get_events_by_search_not_found():
+    response = client.get("/events?search=eventthatdoesntexist")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No events found"
+
 def test_get_event():
-    
     response = client.get("/events/1")
     assert response.status_code == 200
 
