@@ -1,17 +1,39 @@
 from app.database import get_connection
 
-def get_all_events():
+def get_all_events(society_id, start_after, search):
+    conditions = []
+    params = []
+
+    if society_id is not None:
+        conditions.append("society_id = %s")
+        params.append(society_id)
+
+    if start_after is not None:
+        conditions.append("start_time > %s")
+        params.append(start_after)
+
+    if search is not None:
+        conditions.append("event_title ILIKE %s")
+        params.append(f"%{search}%")
+
+    if len(conditions) > 0:
+        condition_clause = "WHERE " + " AND ".join(conditions)
+    else:
+        condition_clause = ""
+
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                """
+                f"""
                 SELECT 
                     *
                 FROM events
+                {condition_clause}
                 ORDER BY start_time;
-                """
+                """,
+                tuple(params)
             )
-                
+
             return cur.fetchall()
 
 def get_event_by_id(event_id: int):

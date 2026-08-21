@@ -4,11 +4,22 @@ from app.repositories import events as event_repository
 
 from app.schemas.events import EventCreate, EventUpdate
 
+from datetime import datetime
+
 events_router = APIRouter(tags=["events"])
 
 @events_router.get("/events")
-def get_events():
-    return event_repository.get_all_events()
+def get_events(
+    society_id : int | None = None,
+    start_after: datetime | None = None,
+    search: str | None = None
+    ):
+
+    return event_repository.get_all_events(
+        society_id=society_id,
+        start_after=start_after,
+        search=search
+    )
 
 @events_router.get("/events/{event_id}")
 def get_event(event_id: int):
