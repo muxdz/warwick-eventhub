@@ -13,11 +13,12 @@ def get_all_events(society_id, start_after, search):
         params.append(start_after)
 
     if search is not None:
-        conditions.append("event_title ILIKE %s")
+        conditions.append("event_title ILIKE %s OR description ILIKE %s")
+        params.append(f"%{search}%")
         params.append(f"%{search}%")
 
     if len(conditions) > 0:
-        condition_clause = "WHERE " + " AND ".join(conditions)
+        condition_clause = " WHERE " + " AND ".join(conditions)
     else:
         condition_clause = ""
 
