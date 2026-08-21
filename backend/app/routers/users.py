@@ -2,7 +2,9 @@ from fastapi import APIRouter, HTTPException
 
 from app.repositories import users as user_repository
 
-from app.schemas.users import UserCreate, UserUpdate
+from app.schemas.users import UserCreate, UserUpdate, UserResponse
+
+from app.security import hash_password, verify_password
 
 users_router = APIRouter(tags=["users"])
 
@@ -34,7 +36,7 @@ def get_user_by_email(email: str):
 
     return user
 
-@users_router.post("/users", status_code=201)
+@users_router.post("/auth/register", status_code=201, response_model=UserResponse)
 def create_user(user_data: UserCreate):
     existing_user = user_repository.get_user_by_email(user_data.email)
 
@@ -45,7 +47,7 @@ def create_user(user_data: UserCreate):
         )
 
     # Password hashing
-    password_hash = user_data.password + "test_hash"
+    password_hash = hash_password(user_data.password)
 
     return user_repository.create_user(user_data, password_hash)
 
