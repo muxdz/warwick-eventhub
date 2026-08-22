@@ -1,9 +1,22 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.repositories import societies as society_repository
+from app.repositories import memberships as membership_repository
 from app.schemas.societies import SocietyCreate, SocietyUpdate
+from app.security import get_current_user
+from typing import Literal
 
 societies_router = APIRouter(tags=["societies"])
+
+
+def require_organiser(society_id: int, user_id: int):
+    membership = membership_repository.get_membership(society_id, user_id)
+
+    if membership is None or membership["role"] != "organiser":
+        raise HTTPException(
+            status_code=403,
+            detail="You must be a society organiser to manage it"
+        )
 
 @societies_router.get("/societies")
 def get_all_societies():
@@ -34,8 +47,10 @@ def get_society_by_name(society_name: str):
     return society
 
 @societies_router.post("/societies", status_code=201)
-def create_society(society: SocietyCreate):
-    existing_society = society_repository.get_society_by_name(society.society_name)
+def create_society(society_data: SocietyCreate, current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
+
+    existing_society = society_repository.get_society_by_name(society_data.society_name)
 
     if existing_society:
         raise HTTPException(
@@ -43,10 +58,57 @@ def create_society(society: SocietyCreate):
             detail="Society already exists"
         )
 
-    return society_repository.create_society(society)
+    society = society_repository.create_society(society_data)
+
+    society_id = society["id"]
+
+    membership_repository.insert_membership(society_id, user_id, "organiser")
+
+    return society
+
+@societies_router.get("/societies/{society_id}/members")
+def get_society_members(society_id: int, current_user=Depends(get_current_user)):
+    require_organiser(society_id, current_user["user_id"])
+    return membership_repository.get_society_members(society_id)
+
+@societies_router.post("/societies/{society_id}/members/{user_id}", status_code=201)
+def add_society_member(
+    society_id: int,
+    user_id: int,
+    current_user=Depends(get_current_user)
+):
+    require_organiser(society_id, current_user["user_id"])
+    return membership_repository.insert_membership(society_id, user_id, "member")
+
+@societies_router.patch("/societies/{society_id}/members/{user_id}")
+def update_membership(
+    society_id: int,
+    user_id: int,
+    role: Literal["organiser", "member"],
+    current_user=Depends(get_current_user)
+):
+    require_organiser(society_id, current_user["user_id"])
+    return membership_repository.update_membership(society_id, user_id, role)
+
+@societies_router.delete("/societies/{society_id}/members/{user_id}")
+def remove_society_member(
+    society_id: int,
+    user_id: int,
+    current_user=Depends(get_current_user)
+):
+    require_organiser(society_id, current_user["user_id"])
+    return membership_repository.delete_membership(society_id, user_id)
 
 @societies_router.patch("/societies/{society_id}")
-def update_society(society_id: int, society: SocietyUpdate):
+def update_society(
+    society_id: int,
+    society: SocietyUpdate,
+    current_user=Depends(get_current_user)
+):
+    if society_repository.get_society_by_id(society_id) is None:
+        raise HTTPException(status_code=404, detail="Society not found")
+
+    require_organiser(society_id, current_user["user_id"])
     updates = society.model_dump(exclude_unset=True)
 
     if not updates:
@@ -66,7 +128,11 @@ def update_society(society_id: int, society: SocietyUpdate):
     return updated_society
 
 @societies_router.delete("/societies/{society_id}")
-def delete_society(society_id: int):
+def delete_society(society_id: int, current_user=Depends(get_current_user)):
+    if society_repository.get_society_by_id(society_id) is None:
+        raise HTTPException(status_code=404, detail="Society not found")
+
+    require_organiser(society_id, current_user["user_id"])
     deleted_society = society_repository.delete_society(society_id)
 
     if not deleted_society:

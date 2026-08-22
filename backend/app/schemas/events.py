@@ -7,7 +7,6 @@ class EventCreate(BaseModel):
     end_time: str | None = None
     description: str | None = None
     society_id: int
-    created_by_user_id: int
     image_key: str | None = None
 
 class EventUpdate(BaseModel):

@@ -1,4 +1,4 @@
-import os
+from app.config import settings
 
 from logging.config import fileConfig
 
@@ -30,11 +30,11 @@ target_metadata = None
 def get_database_url():
     return URL.create(
         drivername="postgresql+psycopg",
-        username=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-        host=os.environ["DB_HOST"],
-        port=int(os.environ.get("DB_PORT", "5432")),
-        database=os.environ["DB_NAME"],
+        username=settings.db_user,
+        password=settings.db_password,
+        host=settings.db_host,
+        port=int(settings.db_port),
+        database=settings.db_name,
     )
 
 
