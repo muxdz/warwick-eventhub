@@ -43,20 +43,21 @@ def get_event(event_id: int):
 
 @events_router.post("/events", status_code=201)
 def create_event(event_data: EventCreate, current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
 
-    return event_repository.create_event(event_data)
+    return event_repository.create_event(event_data, user_id)
 
 @events_router.delete("/events/{event_id}")
 def delete_event(event_id: int, current_user = Depends(get_current_user)):
-    deleted_event = event_repository.delete_event(event_id)
-
     event = event_repository.get_event_by_id(event_id)
     
-    if event["created_by_user_id"] != current_user["id"]:
+    if event["created_by_user_id"] != current_user["user_id"]:
         raise HTTPException(
             status_code=403,
             detail="You are not allowed to delete this event"
         )
+
+    deleted_event = event_repository.delete_event(event_id)
 
     if deleted_event is None:
         raise HTTPException(
@@ -71,7 +72,7 @@ def update_event(event_id: int, event_data: EventUpdate, current_user = Depends(
     updates = event_data.model_dump(exclude_unset=True)
     event = event_repository.get_event_by_id(event_id)
 
-    if event["created_by_user_id"] != current_user["id"]:
+    if event["created_by_user_id"] != current_user["user_id"]:
         raise HTTPException(
             status_code=403,
             detail="You are not allowed to update this event"
