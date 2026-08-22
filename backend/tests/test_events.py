@@ -1,9 +1,14 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.security import get_current_user
 from datetime import datetime
 
 client = TestClient(app)
+
+
+def use_user(user_id: int):
+    app.dependency_overrides[get_current_user] = lambda: {"user_id": str(user_id)}
 
 def test_health():
     response = client.get("/health")
@@ -120,6 +125,37 @@ def test_create_event_validation_error():
 
     assert response.status_code == 422
 
+def test_member_cannot_create_event():
+    use_user(2)
+
+    response = client.post(
+        "/events",
+        json={
+            "event_title": "Member Event",
+            "event_location": "FAB",
+            "start_time": "2026-10-10 10:00:00+01",
+            "society_id": 1
+        }
+    )
+
+    assert response.status_code == 403
+
+def test_organiser_can_create_event_for_their_society():
+    use_user(2)
+
+    response = client.post(
+        "/events",
+        json={
+            "event_title": "Organiser Event",
+            "event_location": "FAB",
+            "start_time": "2026-10-10 10:00:00+01",
+            "society_id": 2
+        }
+    )
+
+    assert response.status_code == 201
+    assert response.json()["created_by_user_id"] == 2
+
 def test_update_event_partial():
     original_event = client.get("/events/1").json()
 
@@ -178,6 +214,16 @@ def test_update_event_not_found():
 
     assert response.status_code == 404
 
+def test_member_cannot_update_event():
+    use_user(2)
+    response = client.patch("/events/1", json={"event_title": "Not allowed"})
+    assert response.status_code == 403
+
+def test_society_organiser_can_update_another_creators_event():
+    response = client.patch("/events/3", json={"event_title": "Organiser edit"})
+    assert response.status_code == 200
+    assert response.json()["event_title"] == "Organiser edit"
+
 def test_delete_event():
     response = client.delete("/events/1")
 
@@ -190,6 +236,12 @@ def test_delete_event():
 def test_delete_event_not_found():
     response = client.delete("/events/999")
     assert response.status_code == 404
+
+def test_member_cannot_delete_event():
+    use_user(2)
+    response = client.delete("/events/1")
+    assert response.status_code == 403
+    assert client.get("/events/1").status_code == 200
 
 def test_update_after_deleting_lower_id():
     response = client.delete("/events/2")
