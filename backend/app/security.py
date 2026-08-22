@@ -39,6 +39,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = decode_access_token(token)
     user_id = payload.get("user_id")
 
+    if not user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Could not validate credentials"
+        )
+
     user = user_repository.get_user_by_id(user_id)
 
     if not user:
