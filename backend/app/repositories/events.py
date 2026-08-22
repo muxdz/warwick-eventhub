@@ -52,7 +52,7 @@ def get_event_by_id(event_id: int):
 
             return cur.fetchone()
 
-def create_event(event_data):   
+def create_event(event_data, user_id):   
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -86,7 +86,7 @@ def create_event(event_data):
                     event_data.end_time,
                     event_data.description,
                     event_data.society_id,
-                    event_data.created_by_user_id,
+                    user_id,
                     event_data.image_key
                 )
             )

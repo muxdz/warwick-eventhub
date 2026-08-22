@@ -36,6 +36,8 @@ def decode_access_token(token: str) -> dict:
     return jwt.decode(token, secret_key, algorithms=[algorithm])
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
+    print("GET_CURRENT_USER CALLED")
+
     payload = decode_access_token(token)
     user_id = payload.get("user_id")
 
