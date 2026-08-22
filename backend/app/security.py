@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from app.repositories import users as user_repository
 
 import jwt
+from jwt.exceptions import InvalidTokenError
 
 password_hash = PasswordHash.recommended()
 
@@ -36,23 +37,31 @@ def decode_access_token(token: str) -> dict:
     return jwt.decode(token, secret_key, algorithms=[algorithm])
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    print("GET_CURRENT_USER CALLED")
+    try:
+        payload = decode_access_token(token)
+    except InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
 
-    payload = decode_access_token(token)
     user_id = payload.get("user_id")
 
     if not user_id:
         raise HTTPException(
             status_code=401,
-            detail="Could not validate credentials"
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"}
         )
 
     user = user_repository.get_user_by_id(user_id)
 
     if not user:
         raise HTTPException(
-            status_code=404,
-            detail="User not found"
+            status_code=401,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"}
         )
 
-    return decode_access_token(token)
+    return payload

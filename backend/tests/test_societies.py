@@ -1,9 +1,14 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.security import get_current_user
 from datetime import datetime
 
 client = TestClient(app)
+
+
+def use_user(user_id: int):
+    app.dependency_overrides[get_current_user] = lambda: {"user_id": str(user_id)}
 
 def test_get_all_societies():
     response = client.get("/societies")
@@ -70,6 +75,11 @@ def test_update_society_null():
     )
     assert response.status_code == 422
 
+def test_member_cannot_update_society():
+    use_user(2)
+    response = client.patch("/societies/1", json={"society_name": "Not allowed"})
+    assert response.status_code == 403
+
 def test_delete_society():
     response = client.delete("/societies/1")
 
@@ -82,3 +92,13 @@ def test_delete_society():
 def test_delete_society_not_found():
     response = client.delete("/societies/999")
     assert response.status_code == 404
+
+def test_member_cannot_delete_society():
+    use_user(2)
+    response = client.delete("/societies/1")
+    assert response.status_code == 403
+
+def test_organiser_can_update_membership_role():
+    response = client.patch("/societies/1/members/2?role=organiser")
+    assert response.status_code == 200
+    assert response.json()["role"] == "organiser"
