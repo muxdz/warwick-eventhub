@@ -3,11 +3,11 @@ import { societies } from '@/data/societies';
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-6xl p-6">
-      <h1 className="mb-6 text-3xl font-bold">Warwick to EventHub</h1>
-      <p>Discover what's happening around campus.</p>
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">Welcome to EventHub</h1>
+      <p className="mt-3 text-lg leading-7 text-slate-600">Discover what&apos;s happening around campus.</p>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"> 
+      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {societies.map((society) => (
         <SocietyCard key={society.id} society={society} />
       ))}
