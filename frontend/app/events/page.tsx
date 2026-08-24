@@ -1,8 +1,14 @@
-import { events } from '@/data/events';
-
 import EventList from "@/components/EventList";
+import { GetEvents } from "@/services/events"; //GetEvents from "@/services/events";
+import { notFound } from "next/navigation";
 
-export default function EventsPage() {
+export default async function EventsPage() {
+    const events = await GetEvents();
+
+    if (!events) {
+        return notFound();
+    }
+
     return (
         <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
             <div className="mb-8 text-center">

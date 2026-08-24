@@ -1,7 +1,9 @@
 import SocietyCard from "@/components/SocietyCard";
-import { societies } from '@/data/societies';
+import { GetSocieties } from "@/services/societies";
 
-export default function Home() {
+export default async function Home() {
+  const societies = await GetSocieties();
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <h1 className="text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">Welcome to EventHub</h1>
