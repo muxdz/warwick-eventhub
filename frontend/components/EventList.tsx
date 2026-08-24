@@ -48,7 +48,7 @@ export default function EventList({ events }: EventListProps) {
 
             {filteredEvents.length === 0 ? (
                 <p className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-slate-700">
-                    No events found. Try another search.
+                    No events match your search. Try another search.
                 </p>
             ) : (
                 <div className="grid gap-5 md:grid-cols-2">
