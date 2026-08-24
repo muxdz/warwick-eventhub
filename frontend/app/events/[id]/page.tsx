@@ -1,6 +1,6 @@
-import { events } from "@/data/events";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { GetEvent } from "@/services/events";
+import notFound from "@/app/events/[id]/not-found";
 
 type EventPageProps = {
   params: Promise<{
@@ -14,12 +14,10 @@ export default async function EventPage({
   const { id } = await params;
 
   const eventID = Number(id);
-  const event = events.find(
-    (event) => event.id === eventID
-  );
+  const event = await GetEvent(eventID);
 
   if (!event) {
-    notFound();
+    return notFound();
   }
 
   return (
