@@ -18,6 +18,13 @@ export default async function EventsPage() {
                 </p>
             </div>
 
+            {events.length === 0 && (
+                <div className="mt-8 text-center">
+                    <p className="text-base leading-7 text-slate-600 sm:text-lg">
+                        No upcoming events found.
+                    </p>
+                </div>
+            )}
             <EventList events={events} />
         </main>
     );
