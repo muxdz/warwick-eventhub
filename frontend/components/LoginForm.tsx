@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "@/services/auth";
+import { Login } from "@/services/auth";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ export default function LoginForm() {
         formData.append("username", email);
         formData.append("password", password);
 
-        const response = await login(formData);
+        const response = await Login(formData);
         
         const data = await response.json();
 
