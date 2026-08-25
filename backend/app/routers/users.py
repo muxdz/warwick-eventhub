@@ -15,6 +15,11 @@ users_router = APIRouter(tags=["users"])
 def get_me(current_user = Depends(get_current_user)):
     return current_user
 
+@users_router.get("/users/me/data", status_code=200, response_model=UserResponse)
+def get_me_data(current_user = Depends(get_current_user)):
+    id = current_user["user_id"]
+    return user_repository.get_user_by_id(id)
+
 @users_router.post("/auth/login")
 def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     email = form_data.username
