@@ -1,34 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import { login } from "@/services/auth";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    async function handleLogin(e: React.SubmitEvent) {
+    async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
+
+        const form = new FormData(e.currentTarget);
+
+        const email = form.get("email") as string;
+        const password = form.get("password") as string;
 
         const formData = new URLSearchParams();
         formData.append("username", email);
         formData.append("password", password);
 
-        const reponse = await fetch (
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: formData,
-            }
-        );
+        const response = await login(formData);
         
-        const data = await reponse.json();
+        const data = await response.json();
 
-        if (!reponse.ok) {
-            const error = await reponse.json();
-            return console.error(error.detail ?? `Request failed with status ${reponse.status}`);
+        if (!response.ok) {
+            return console.error(data.detail ?? `Request failed with status ${response.status}`);
         }
 
         localStorage.setItem("access_token", data.access_token);
@@ -38,13 +34,15 @@ export default function LoginForm() {
         <form onSubmit={handleLogin}>
             <input
                 id="email"
+                name="email"
                 type="email" 
                 placeholder="alice@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}     
             />
             <input 
-                id="password" 
+                id="password"
+                name="password" 
                 type="password" 
                 placeholder="Enter your password"
                 value={password}
