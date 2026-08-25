@@ -7,6 +7,8 @@ from app.schemas.users import UserCreate, UserUpdate, UserResponse
 
 from app.security import hash_password, verify_password, get_current_user, create_access_token, oauth2_scheme
 
+from typing import Annotated
+
 users_router = APIRouter(tags=["users"])
 
 @users_router.get("/users/me")
@@ -14,7 +16,7 @@ def get_me(current_user = Depends(get_current_user)):
     return current_user
 
 @users_router.post("/auth/login")
-def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
+def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     email = form_data.username
     password = form_data.password
 
