@@ -1,5 +1,5 @@
-export async function login(formData: URLSearchParams) {
-    const reponse = await fetch (
+export async function Login(formData: URLSearchParams) {
+    const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         {
             method: "POST",
@@ -10,11 +10,11 @@ export async function login(formData: URLSearchParams) {
         }
     );
 
-    return reponse;
+    return response;
 }
 
-export async function get_current_user(token: string) {
-    const reponse = await fetch (
+export async function getCurrentUser(token: string | null) {
+    const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/users/me`, 
         {
             headers: {
@@ -23,5 +23,5 @@ export async function get_current_user(token: string) {
         }
     );
 
-    return reponse.json();
+    return response;
 }
