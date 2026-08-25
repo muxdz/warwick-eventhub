@@ -15,7 +15,7 @@ export async function Login(formData: URLSearchParams) {
 
 export async function getCurrentUser(token: string | null) {
     const response = await fetch (
-        `${process.env.NEXT_PUBLIC_API_URL}/users/me`, 
+        `${process.env.NEXT_PUBLIC_API_URL}/users/me/data`, 
         {
             headers: {
                 "Authorization": `Bearer ${token}`
