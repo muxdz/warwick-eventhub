@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/services/auth";
 
 export default function Profile() {
     const [user, setUser] = useState<any>(null);
+    const createdTime = new Date(user?.created_at);
 
     async function getUserData() {
         const reponse = await getCurrentUser(localStorage.getItem("access_token"));
@@ -22,7 +23,12 @@ export default function Profile() {
     return (
         <main>
             <h1>Profile</h1>
-            <p>{JSON.stringify(user)}</p>
+            <p>ID: {user?.id}</p>
+            <p>Name: {user?.name}</p>
+            <p>Email: {user?.email}</p>
+            <p>
+                <time dateTime={user?.created_at}>{createdTime.toLocaleString("en-GB")}</time>
+            </p>
         </main>
     );
 }
