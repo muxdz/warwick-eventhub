@@ -27,12 +27,11 @@ export default function LoginForm() {
         const data = await reponse.json();
 
         if (!reponse.ok) {
-            console.log(data.detail);
-            return;
+            const error = await reponse.json();
+            return console.error(error.detail ?? `Request failed with status ${reponse.status}`);
         }
 
-        const token = data.access_token;
-        console.log(token);
+        localStorage.setItem("access_token", data.access_token);
     }
 
     return (
