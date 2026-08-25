@@ -19,7 +19,10 @@ def get_user_by_id(user_id: int):
             cur.execute(
                 """
                 SELECT 
-                    *
+                    id,
+                    user_name,
+                    email,
+                    created_at
                 FROM users
                 WHERE id = %s;
                 """,
