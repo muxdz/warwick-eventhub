@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Login } from "@/services/auth";
+import { useRouter } from "next/navigation";
+import { AUTH_CHANGED_EVENT, Login } from "@/services/auth";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
 
     async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -28,6 +30,8 @@ export default function LoginForm() {
         }
 
         localStorage.setItem("access_token", data.access_token);
+        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+        router.push("/profile");
     }
 
     return (

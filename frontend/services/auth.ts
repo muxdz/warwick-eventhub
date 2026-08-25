@@ -1,3 +1,5 @@
+export const AUTH_CHANGED_EVENT = "auth-changed";
+
 export async function Login(formData: URLSearchParams) {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
@@ -13,9 +15,22 @@ export async function Login(formData: URLSearchParams) {
     return response;
 }
 
-export async function getCurrentUser(token: string | null) {
+export async function getUserData(token: string | null) {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/users/me/data`, 
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    return response;
+}
+
+export async function checkAuth(token: string | null) {
+    const response = await fetch (
+        `${process.env.NEXT_PUBLIC_API_URL}/users/me`, 
         {
             headers: {
                 "Authorization": `Bearer ${token}`
