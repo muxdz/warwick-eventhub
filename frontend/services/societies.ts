@@ -1,4 +1,4 @@
-import { Society } from "@/types/societies";
+import type { Society } from "@/types/societies";
 
 export async function GetSocieties(): Promise<Society[]> {
     const reponse = await fetch (
@@ -12,14 +12,18 @@ export async function GetSocieties(): Promise<Society[]> {
     return reponse.json();
 }
 
-export async function GetSociety(id: number): Promise<Society> {
-    const reponse = await fetch (
+export async function GetSociety(id: number): Promise<Society | null> {
+    const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/societies/${id}`
     );
 
-    if (!reponse.ok) {
-        throw new Error(reponse.status.toString());
+    if (response.status === 404) {
+        return null;
     }
 
-    return reponse.json();
+    if (!response.ok) {
+        throw new Error(response.status.toString());
+    }
+
+    return response.json();
 }
