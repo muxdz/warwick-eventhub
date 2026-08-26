@@ -7,9 +7,11 @@ import type { Event } from "@/types/events";
 
 type EventListProps = {
     events: Event[];
+    bookmarkedIds?: number[];
+    onBookmarkChange?: (eventId: number, isBookmarked: boolean) => void;
 };
 
-export default function EventList({ events }: EventListProps) {
+export default function EventList({ events, bookmarkedIds, onBookmarkChange }: EventListProps) {
     const [search, setSearch] = useState("");
 
     const filteredEvents = events.filter((event) =>
@@ -53,7 +55,12 @@ export default function EventList({ events }: EventListProps) {
             ) : (
                 <div className="grid gap-5 md:grid-cols-2">
                     {filteredEvents.map((event) => (
-                        <EventCard key={event.id} event={event} />
+                        <EventCard
+                            key={event.id}
+                            event={event}
+                            isBookmarked={bookmarkedIds?.includes(event.id) ?? false}
+                            onBookmarkChange={onBookmarkChange}
+                        />
                     ))}
                 </div>
             )}
