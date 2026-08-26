@@ -40,3 +40,22 @@ export async function checkAuth(token: string | null) {
 
     return response;
 }
+
+export async function Register(user_name: string, email: string, password: string) {
+    const response = await fetch (
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "user_name": user_name,
+                "email": email,
+                "password": password
+            })
+        }
+    );
+
+    return response;
+}
