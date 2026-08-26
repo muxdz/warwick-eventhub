@@ -74,7 +74,7 @@ def get_user_by_email(email: str):
 
     return user
 
-@users_router.post("/auth/register", status_code=201, response_model=UserResponse)
+@users_router.post("/auth/register", status_code=201)
 def create_user(user_data: UserCreate):
     existing_user = user_repository.get_user_by_email(user_data.email)
 
@@ -87,7 +87,14 @@ def create_user(user_data: UserCreate):
     # Password hashing
     password_hash = hash_password(user_data.password)
 
-    return user_repository.create_user(user_data, password_hash)
+    user = user_repository.create_user(user_data, password_hash)
+
+    token = create_access_token(user["id"])
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
 
 @users_router.delete("/users/{user_id}")
 def delete_user(user_id: int):
