@@ -64,6 +64,13 @@ export default function Navbar() {
                 </div>
 
                 {loggedIn ? (
+                <div>
+                    <Link
+                        href="/profile"
+                        className="rounded-md px-3 py-2 font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                    >
+                        Profile
+                    </Link>
                     <button
                         type="button"
                         onClick={handleLogout}
@@ -71,6 +78,7 @@ export default function Navbar() {
                     >
                         Logout
                     </button>
+                </div>
                 ) : (
                     <Link
                         href="/login"
