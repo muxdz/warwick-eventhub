@@ -50,6 +50,12 @@ export default function Navbar() {
 
                 <div className="flex items-center gap-2 sm:gap-4">
                     <Link
+                        href="/societies"
+                        className="rounded-md px-3 py-2 font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                    >
+                        Societies
+                    </Link>
+                    <Link
                         href="/events"
                         className="rounded-md px-3 py-2 font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
