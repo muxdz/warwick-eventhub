@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Event as EventData } from "@/types/events";
 import { UpdateEvent, type EventUpdate } from "@/services/events";
+import { useRouter } from "next/navigation";
 
 type Props = {
   event: EventData;
@@ -38,6 +39,8 @@ export default function EditEventForm({ event }: Props) {
   const [description, setDescription] = useState(event.description ?? "");
   const [startTime, setStartTime] = useState(toDateTimeLocal(event.start_time));
   const [endTime, setEndTime] = useState(toDateTimeLocal(event.end_time));
+
+  const router = useRouter();
 
   async function handleSubmit(
     e: React.SubmitEvent<HTMLFormElement>
@@ -80,6 +83,8 @@ export default function EditEventForm({ event }: Props) {
 
     await UpdateEvent(event.id, updates, token);
     console.log("Event updated");
+
+    router.push(`/events/${event.id}`);
   }
 
   return (
