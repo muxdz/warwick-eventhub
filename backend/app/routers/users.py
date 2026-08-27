@@ -87,14 +87,7 @@ def create_user(user_data: UserCreate):
     # Password hashing
     password_hash = hash_password(user_data.password)
 
-    user = user_repository.create_user(user_data, password_hash)
-
-    token = create_access_token(user["id"])
-    
-    return {
-        "access_token": token,
-        "token_type": "bearer"
-    }
+    return user_repository.create_user(user_data, password_hash)
 
 @users_router.delete("/users/{user_id}")
 def delete_user(user_id: int):

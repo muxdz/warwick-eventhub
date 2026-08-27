@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AUTH_CHANGED_EVENT, Register } from "@/services/auth";
+import { AUTH_CHANGED_EVENT, Register, Login } from "@/services/auth";
 
 export default function RegisterForm() {
     const [formData, setFormData] = useState({
@@ -28,8 +28,14 @@ export default function RegisterForm() {
         }
 
         const response = await Register(username, email, password);
-
         const data = await response.json();
+
+        const loginForm = new URLSearchParams();
+        loginForm.append("username", email);
+        loginForm.append("password", password);
+
+        const loginResponse = await Login(loginForm);
+        const loginData = await loginResponse.json();
 
         console.log(data);
 
@@ -37,7 +43,7 @@ export default function RegisterForm() {
             return console.error(data.detail ?? `Request failed with status ${response.status}`);
         }
 
-        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("access_token", loginData.access_token);
         window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
         router.push("/profile");
     }
