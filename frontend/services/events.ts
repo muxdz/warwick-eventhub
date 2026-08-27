@@ -1,4 +1,12 @@
-import { Event } from "@/types/events";
+import type { Event } from "@/types/events";
+
+export type EventUpdate = {
+    event_title?: string;
+    event_location?: string;
+    start_time?: string;
+    end_time?: string | null;
+    description?: string | null;
+}
 
 export async function GetEvents(): Promise<Event[] | null> {
     const reponse = await fetch (
@@ -46,6 +54,31 @@ export async function CreateEvent(eventData: URLSearchParams) {
                 ...(token && { Authorization: `Bearer ${token}` }),
             },
             body: JSON.stringify(Object.fromEntries(eventData))
+        }
+    );
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail ?? `Request failed with status ${response.status}`);
+    }
+
+    return response.json();
+}
+
+export async function UpdateEvent(
+    id: number,
+    updates: EventUpdate,
+    token: string
+): Promise<Event> {
+    const response = await fetch (
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${id}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(updates)
         }
     );
 
