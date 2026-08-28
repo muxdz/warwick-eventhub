@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GetEvent } from "@/services/events";
 import notFound from "@/app/events/[id]/not-found";
+import EventActions from "@/components/EventActions";
 
 type EventPageProps = {
   params: Promise<{
@@ -57,6 +58,11 @@ export default async function EventPage({
             </p>
           </div>
         )}
+
+        <EventActions 
+          eventId={eventID}
+          createdByUserId={event.created_by_user_id}  
+        />
       </article>
     </main>
   );
