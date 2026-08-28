@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import { useAuth } from "@/context/AuthContext";
 import { AUTH_CHANGED_EVENT, checkAuth } from "@/services/auth";
 
 export default function Navbar() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const { user, logout } = useAuth();
 
     useEffect(() => {
         async function checkLoggedIn() {
@@ -73,7 +74,7 @@ export default function Navbar() {
                     </Link>
                     <button
                         type="button"
-                        onClick={handleLogout}
+                        onClick={logout}
                         className="rounded-md bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
                         Logout

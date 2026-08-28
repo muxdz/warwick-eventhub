@@ -1,6 +1,8 @@
+import { User } from "@/types/users";
+
 export const AUTH_CHANGED_EVENT = "auth-changed";
 
-export async function Login(formData: URLSearchParams) {
+export async function Login(email: string, password: string) {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         {
@@ -8,14 +10,17 @@ export async function Login(formData: URLSearchParams) {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: formData
+            body: new URLSearchParams({
+                "username": email,
+                "password": password
+            }),
         }
     );
 
     return response;
 }
 
-export async function getUserData(token: string | null) {
+export async function getUserData(token: string): Promise<User> {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/users/me/data`, 
         {
@@ -25,7 +30,7 @@ export async function getUserData(token: string | null) {
         }
     );
 
-    return response;
+    return response.json();
 }
 
 export async function checkAuth(token: string | null) {
