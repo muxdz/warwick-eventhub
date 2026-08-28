@@ -89,3 +89,21 @@ export async function UpdateEvent(
 
     return response.json();
 }
+
+export async function DeleteEvent(id: number, token: string) {
+    const response = await fetch (
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${id}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail ?? `Request failed with status ${response.status}`);
+    }
+
+}
