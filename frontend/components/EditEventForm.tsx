@@ -43,6 +43,8 @@ export default function EditEventForm({ event }: Props) {
 
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
   async function handleSubmit(
@@ -50,42 +52,49 @@ export default function EditEventForm({ event }: Props) {
   ) {
     e.preventDefault();
     
-    if (!token) {
-      console.log("No token");
-      return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (!token) {
+        throw new Error("No token");
+      }
+
+      const updates: EventUpdate = {};
+
+      if (title !== event.event_title) {
+        updates.event_title = title;
+      }
+
+      if (location !== event.event_location) {
+        updates.event_location = location;
+      }
+
+      if (description !== event.description) {
+        updates.description = description;
+      }
+
+      if (startTime !== toDateTimeLocal(originalStartTime)) {
+        updates.start_time = toTimestampWithTimezone(startTime);
+      }
+
+      if (endTime !== toDateTimeLocal(originalEndTime)) {
+        updates.end_time = endTime ?toTimestampWithTimezone(endTime): null;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        throw new Error("No updates");
+      }
+
+      await UpdateEvent(event.id, updates, token);
+      console.log("Event updated");
+
+      router.push(`/events/${event.id}`);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-
-    const updates: EventUpdate = {};
-
-    if (title !== event.event_title) {
-      updates.event_title = title;
-    }
-
-    if (location !== event.event_location) {
-      updates.event_location = location;
-    }
-
-    if (description !== event.description) {
-      updates.description = description;
-    }
-
-    if (startTime !== toDateTimeLocal(originalStartTime)) {
-      updates.start_time = toTimestampWithTimezone(startTime);
-    }
-
-    if (endTime !== toDateTimeLocal(originalEndTime)) {
-      updates.end_time = endTime ?toTimestampWithTimezone(endTime): null;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      console.log("No updates");
-      return;
-    }
-
-    await UpdateEvent(event.id, updates, token);
-    console.log("Event updated");
-
-    router.push(`/events/${event.id}`);
   }
 
   return (
@@ -117,7 +126,10 @@ export default function EditEventForm({ event }: Props) {
         onChange={(e) => setEndTime(e.target.value)}
       />
 
-      <button type="submit">
+      <button 
+        disabled={loading} 
+        type="submit"
+      >
         Save changes
       </button>
     </form>

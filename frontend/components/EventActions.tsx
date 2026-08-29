@@ -4,6 +4,7 @@ import { DeleteEvent } from "@/services/events";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { useState } from "react";
 
 type EventActionsProps = {
     eventId: number;
@@ -13,6 +14,8 @@ type EventActionsProps = {
 export default function EventActions({ eventId, createdByUserId }: EventActionsProps) {
     const router = useRouter();
     const { user, token } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     if (!user) {
         return null;
@@ -25,23 +28,32 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
         return null;
     }
 
-    async function handleDeleteEvent() {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this event?"
-        );
+    async function handleDeleteEvent(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
 
-        if (!confirmed) {
-            return;
+        setLoading(true);
+        setError(null);
+
+        try {
+            const confirmed = window.confirm(
+                "Are you sure you want to delete this event?"
+            )
+
+            if (!confirmed) {
+                throw new Error("Event not deleted");
+            }
+
+            if (!token) {
+                throw new Error("No token");
+            }
+
+            DeleteEvent(eventId, token);
+            router.push("/events");
+        } catch (error: any) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-
-        if (!token) {
-            console.log("No token");
-            return;
-        }       
-
-        DeleteEvent(eventId, token);
-
-        router.push("/events");
     }
 
     return (
