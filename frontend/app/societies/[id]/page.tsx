@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 import { GetSociety } from "@/services/societies";
+import SocietyAction from "@/components/SocietyActions";
 
 type SocietyPageProps = {
     params: Promise<{
@@ -50,14 +50,8 @@ export default async function SocietyPage({ params }: SocietyPageProps) {
                     </div>
                 </dl>
 
-                <div className="mt-7">
-                    <Link
-                        href={`/societies/${society.id}/create`}
-                        className="inline-flex rounded-md bg-blue-600 px-4 py-2.5 font-medium text-white hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    >
-                        Create an event
-                    </Link>
-                </div>
+                   <SocietyAction societyId={society.id} />
+
             </article>
         </main>
     );

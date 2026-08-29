@@ -64,3 +64,35 @@ export async function Register(user_name: string, email: string, password: strin
 
     return response;
 }
+
+type Membership = {
+    society_id: number;
+    role: "organiser" | "member";
+};
+
+export async function isOrganiser(token: string | null, societyId: number): Promise<boolean> {
+    if (!token) {
+        return false;
+    }
+
+    const response = await fetch (
+        `${process.env.NEXT_PUBLIC_API_URL}/memberships`, 
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        return false;
+    }
+
+    const memberships: Membership[] = await response.json();
+    const isOrganiser = memberships.some(
+        (membership) =>
+            membership.society_id === societyId && membership.role === "organiser"
+    );
+
+    return isOrganiser;
+}
