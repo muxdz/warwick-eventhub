@@ -1,15 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AUTH_CHANGED_EVENT, getUserData } from "@/services/auth";
 import { useAuth } from "@/context/AuthContext";
-
-type User = {
-    id: string | number;
-    name: string;
-    email: string;
-    created_at: string;
-};
 
 export default function Profile() {
     const { user, loading } = useAuth();

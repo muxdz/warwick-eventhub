@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AUTH_CHANGED_EVENT, Register } from "@/services/auth";
+import { Register } from "@/services/auth";
 import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterForm() {

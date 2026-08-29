@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AUTH_CHANGED_EVENT, Login } from "@/services/auth";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {

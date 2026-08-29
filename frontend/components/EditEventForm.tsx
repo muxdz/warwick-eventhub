@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import type { Event as EventData } from "@/types/events";
 import { UpdateEvent, type EventUpdate } from "@/services/events";
