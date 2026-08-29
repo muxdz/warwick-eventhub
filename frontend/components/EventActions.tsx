@@ -1,5 +1,3 @@
-"use client";
-
 import { DeleteEvent } from "@/services/events";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,7 +12,7 @@ type EventActionsProps = {
 
 export default function EventActions({ eventId, createdByUserId }: EventActionsProps) {
     const router = useRouter();
-    const { user } = useAuth();
+    const { token, user } = useAuth();
     const [currentUserID, setCurrentUserID] = useState<number | null>(null);
 
     useEffect(() => {
@@ -48,8 +46,6 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
         if (!confirmed) {
             return;
         }
-
-        const token = localStorage.getItem("access_token");
 
         if (!token) {
             console.log("No token");

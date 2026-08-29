@@ -31,7 +31,7 @@ export default function Profile() {
             <p>Name: {user.user_name}</p>
             <p>Email: {user.email}</p>
             <p>
-                <time dateTime={user.created_at.toISOString()}>{createdTime.toLocaleString("en-GB")}</time>
+                <time dateTime={user.created_at.toString()}>{createdTime.toLocaleString("en-GB")}</time>
             </p>
         </main>
     );
