@@ -4,6 +4,7 @@ import { DeleteEvent } from "@/services/events";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getUserData } from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
 type EventActionsProps = {
@@ -13,22 +14,19 @@ type EventActionsProps = {
 
 export default function EventActions({ eventId, createdByUserId }: EventActionsProps) {
     const router = useRouter();
+    const { user } = useAuth();
     const [currentUserID, setCurrentUserID] = useState<number | null>(null);
 
     useEffect(() => {
-/*************  ✨ Windsurf Command ⭐  *************/
         /**
          * Load the current user's data from local storage
          * and set the current user ID to the state
          */
-/*******  a5f8d853-8fd4-403b-b07d-ef280b0da3d3  *******/
         async function loadUser() {
-            const currentUser = await getUserData(localStorage.getItem("access_token"));
-
-            const userData = await currentUser.json();
+            const currentUser = user;
 
             if (currentUser) {
-                setCurrentUserID(userData.id);
+                setCurrentUserID(currentUser.id);
             }
         }
 
