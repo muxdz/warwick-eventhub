@@ -1,15 +1,6 @@
-"use client";
-
 import type { Event } from "@/types/events";
-import { useAuth } from "@/context/AuthContext";
 
-export async function GetBookmarks(): Promise<Event[]> {
-    const { token } = useAuth();
-
-    if (!token) {
-        return [];
-    }
-    
+export async function GetBookmarks(token: string): Promise<Event[]> {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/bookmarks`, 
         {
@@ -26,9 +17,7 @@ export async function GetBookmarks(): Promise<Event[]> {
     return response.json();
 }
 
-export async function AddBookmark(event_id: number) {
-    const { token } = useAuth();
-    
+export async function AddBookmark(event_id: number, token: string) {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/bookmarks/${event_id}`, 
         {
@@ -45,9 +34,7 @@ export async function AddBookmark(event_id: number) {
     }
 }
 
-export async function RemoveBookmark(event_id: number) {
-    const { token } = useAuth();
-
+export async function RemoveBookmark(event_id: number, token: string) {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/bookmarks/${event_id}`, 
         {
