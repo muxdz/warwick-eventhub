@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AUTH_CHANGED_EVENT, getUserData } from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
 
 type User = {
     id: string | number;
@@ -11,41 +12,7 @@ type User = {
 };
 
 export default function Profile() {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function getData() {
-            const token = localStorage.getItem("access_token");
-
-            if (!token) {
-                setUser(null);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const response = await getUserData(token);
-
-                if (!response.ok) {
-                    localStorage.removeItem("access_token");
-                    setUser(null);
-                    return;
-                }
-
-                setUser(await response.json());
-            } catch {
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        void getData();
-        window.addEventListener(AUTH_CHANGED_EVENT, getData);
-
-        return () => window.removeEventListener(AUTH_CHANGED_EVENT, getData);
-    }, []);
+    const { user, loading } = useAuth();
 
     if (loading) {
         return <main><p>Loading profile...</p></main>;
@@ -61,10 +28,10 @@ export default function Profile() {
         <main>
             <h1>Profile</h1>
             <p>ID: {user.id}</p>
-            <p>Name: {user.name}</p>
+            <p>Name: {user.user_name}</p>
             <p>Email: {user.email}</p>
             <p>
-                <time dateTime={user.created_at}>{createdTime.toLocaleString("en-GB")}</time>
+                <time dateTime={user.created_at.toISOString()}>{createdTime.toLocaleString("en-GB")}</time>
             </p>
         </main>
     );

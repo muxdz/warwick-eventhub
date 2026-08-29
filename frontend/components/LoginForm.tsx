@@ -3,34 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH_CHANGED_EVENT, Login } from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
 
+    const { login } = useAuth();
+
     async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const form = new FormData(e.currentTarget);
-
-        const email = form.get("email") as string;
-        const password = form.get("password") as string;
-
-        const formData = new URLSearchParams();
-        formData.append("username", email);
-        formData.append("password", password);
-
-        const response = await Login(formData);
-        
-        const data = await response.json();
-
-        if (!response.ok) {
-            return console.error(data.detail ?? `Request failed with status ${response.status}`);
-        }
-
-        localStorage.setItem("access_token", data.access_token);
-        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+        await login(email, password);
         router.push("/profile");
     }
 

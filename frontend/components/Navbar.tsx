@@ -7,7 +7,7 @@ import { AUTH_CHANGED_EVENT, checkAuth } from "@/services/auth";
 
 export default function Navbar() {
     const [loggedIn, setLoggedIn] = useState(false);
-    const { user, logout } = useAuth();
+    const { user, loading, logout } = useAuth();
 
     useEffect(() => {
         async function checkLoggedIn() {
@@ -64,22 +64,22 @@ export default function Navbar() {
                     </Link>
                 </div>
 
-                {loggedIn ? (
-                <div>
-                    <Link
-                        href="/profile"
-                        className="rounded-md px-3 py-2 font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    >
-                        Profile
-                    </Link>
-                    <button
-                        type="button"
-                        onClick={logout}
-                        className="rounded-md bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    >
-                        Logout
-                    </button>
-                </div>
+                { !loading && user ? (
+                    <div>
+                        <Link
+                            href="/profile"
+                            className="rounded-md px-3 py-2 font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        >
+                            Profile
+                        </Link>
+                        <button
+                            type="button"
+                            onClick={logout}
+                            className="rounded-md bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        >
+                            Logout
+                        </button>
+                    </div>
                 ) : (
                     <Link
                         href="/login"
@@ -87,7 +87,8 @@ export default function Navbar() {
                     >
                         Login
                     </Link>
-                )}
+                    )
+                }
             </div>
         </nav>
     );
