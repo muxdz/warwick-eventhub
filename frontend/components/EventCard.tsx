@@ -5,6 +5,7 @@ import { RemoveBookmark, AddBookmark } from "@/services/bookmarks";
 import { useEffect, useState } from "react";
 import type { Event } from "@/types/events";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 type EventCardProps = {
     event: Event;
@@ -21,6 +22,7 @@ export default function EventCard({
     const [bookmarked, setBookmarked] = useState(isBookmarked);
     const [isUpdating, setIsUpdating] = useState(false);
     const [bookmarkError, setBookmarkError] = useState("");
+    const { token } = useAuth();
 
     useEffect(() => {
         setBookmarked(isBookmarked);
@@ -32,10 +34,14 @@ export default function EventCard({
         setBookmarkError("");
 
         try {
+            if (!token) {
+                throw new Error("Please log in to bookmark events");
+            }
+
             if (bookmarked) {
-                await RemoveBookmark(event_id);
+                await RemoveBookmark(event_id, token);
             } else {
-                await AddBookmark(event_id);
+                await AddBookmark(event_id, token);
             }
 
             setBookmarked(nextBookmarked);

@@ -4,16 +4,22 @@ import EventList from "@/components/EventList";
 import { GetBookmarks } from "@/services/bookmarks";
 import { Event } from "@/types/events";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function BookmarksPage() {
     const [events, setEvents] = useState<Event[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
+    const { token, loading: authLoading } = useAuth();
 
     useEffect(() => {
+        if (authLoading) {
+            return;
+        }
+
         async function loadBookmarks() {
             try {
-                const data = await GetBookmarks();
+                const data = token ? await GetBookmarks(token) : [];
                 setEvents(data);
             } catch (error) {
                 setLoadError(error instanceof Error ? error.message : "Failed to load bookmarks");
@@ -23,7 +29,7 @@ export default function BookmarksPage() {
         }
 
         void loadBookmarks();
-    }, []);
+    }, [authLoading, token]);
 
     function handleBookmarkChange(eventId: number, isBookmarked: boolean) {
         if (!isBookmarked) {

@@ -5,18 +5,24 @@ import { GetEvents } from "@/services/events";
 import { useEffect, useState } from "react";
 import { GetBookmarks } from "@/services/bookmarks";
 import type { Event } from "@/types/events";
+import { useAuth } from "@/context/AuthContext";
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[] | null>(null);
     const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);
     const [loadError, setLoadError] = useState("");
+    const { token, loading: authLoading } = useAuth();
 
     useEffect(() => {
+        if (authLoading) {
+            return;
+        }
+
         async function loadEventsAndBookmarks() {
             try {
                 const [eventData, bookmarkData] = await Promise.all([
                     GetEvents(),
-                    GetBookmarks(),
+                    token ? GetBookmarks(token) : Promise.resolve([]),
                 ]);
                 setEvents(eventData ?? []);
                 setBookmarkedIds(bookmarkData.map((event) => event.id));
@@ -26,7 +32,7 @@ export default function EventsPage() {
         }
 
         void loadEventsAndBookmarks();
-    }, []);
+    }, [authLoading, token]);
 
     function handleBookmarkChange(eventId: number, isBookmarked: boolean) {
         setBookmarkedIds((currentIds) =>
