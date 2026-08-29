@@ -1,46 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { AUTH_CHANGED_EVENT, checkAuth } from "@/services/auth";
 
 export default function Navbar() {
-    const [loggedIn, setLoggedIn] = useState(false);
     const { user, loading, logout } = useAuth();
-
-    useEffect(() => {
-        async function checkLoggedIn() {
-            const token = localStorage.getItem("access_token");
-
-            if (!token) {
-                setLoggedIn(false);
-                return;
-            }
-
-            try {
-                const response = await checkAuth(token);
-                setLoggedIn(response.ok);
-
-                if (!response.ok) {
-                    localStorage.removeItem("access_token");
-                }
-            } catch {
-                setLoggedIn(false);
-            }
-        }
-
-        void checkLoggedIn();
-        window.addEventListener(AUTH_CHANGED_EVENT, checkLoggedIn);
-
-        return () => window.removeEventListener(AUTH_CHANGED_EVENT, checkLoggedIn);
-    }, []);
-
-    function handleLogout() {
-        localStorage.removeItem("access_token");
-        setLoggedIn(false);
-        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
-    }
 
     return (
         <nav className="border-b border-slate-200 bg-white" aria-label="Main navigation">

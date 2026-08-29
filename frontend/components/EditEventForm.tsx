@@ -1,9 +1,8 @@
-"use client";
-
 import { useState } from "react";
 import type { Event as EventData } from "@/types/events";
 import { UpdateEvent, type EventUpdate } from "@/services/events";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
   event: EventData;
@@ -42,13 +41,13 @@ export default function EditEventForm({ event }: Props) {
 
   const router = useRouter();
 
+  const { token } = useAuth();
+
   async function handleSubmit(
     e: React.SubmitEvent<HTMLFormElement>
   ) {
     e.preventDefault();
-
-    const token = localStorage.getItem("access_token");
-
+    
     if (!token) {
       console.log("No token");
       return;
