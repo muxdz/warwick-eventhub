@@ -130,7 +130,7 @@ export default function EditEventForm({ event }: Props) {
         disabled={loading} 
         type="submit"
       >
-        Save changes
+        {loading ? "Saving..." : "Save changes"}
       </button>
     </form>
   );

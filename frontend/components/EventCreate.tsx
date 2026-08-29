@@ -114,7 +114,12 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 onChange={(event) => setFormData({ ...formData, image_key: event.target.value })}
                 placeholder="Image Key"
             />
-            <button type="submit">Create Event</button>
+            <button 
+                type="submit"
+                disabled={loading}
+            >
+                {loading ? "Creating..." : "Create Event"}
+            </button>
         </form>
     );
 }

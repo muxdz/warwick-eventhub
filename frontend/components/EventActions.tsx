@@ -67,8 +67,9 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
                 <button
                     onClick={handleDeleteEvent}
                     className="inline-flex rounded-md py-2 font-medium text-red-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                    disabled={loading}
                 >
-                    Delete
+                    {loading ? "Deleting..." : "Delete"}
                 </button>
                 </>
             )}
