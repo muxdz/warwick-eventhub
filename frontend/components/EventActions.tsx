@@ -1,7 +1,7 @@
+"use client";
+
 import { DeleteEvent } from "@/services/events";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getUserData } from "@/services/auth";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
@@ -12,27 +12,14 @@ type EventActionsProps = {
 
 export default function EventActions({ eventId, createdByUserId }: EventActionsProps) {
     const router = useRouter();
-    const { token, user } = useAuth();
-    const [currentUserID, setCurrentUserID] = useState<number | null>(null);
+    const { user, token } = useAuth();
 
-    useEffect(() => {
-        /**
-         * Load the current user's data from local storage
-         * and set the current user ID to the state
-         */
-        async function loadUser() {
-            const currentUser = user;
-
-            if (currentUser) {
-                setCurrentUserID(currentUser.id);
-            }
-        }
-
-        loadUser();
-    }, []);
+    if (!user) {
+        return null;
+    }
 
     const canEdit =
-        currentUserID === createdByUserId;
+        user.id === createdByUserId;
 
     if (!canEdit) {
         return null;
