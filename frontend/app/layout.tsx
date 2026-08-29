@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// Next.js processes this stylesheet import; TypeScript has no CSS module declaration here.
-// @ts-expect-error -- side-effect CSS imports are handled by Next.js
 import "./globals.css";
 
 import Navbar from "@/components/Navbar";
