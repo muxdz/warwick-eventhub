@@ -14,31 +14,40 @@ export default function RegisterForm() {
     });
     const router = useRouter();
     const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     async function handleRegister(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const form = new FormData(e.currentTarget);
+        setLoading(true);
+        setError(null);
 
-        const username = form.get("username") as string;
-        const email = form.get("email") as string;
-        const password = form.get("password") as string;
-        const confirm_password = form.get("confirm_password") as string;
+        try {
+            const form = new FormData(e.currentTarget);
 
-        if (password !== confirm_password) {
-            return console.error("Passwords do not match");
+            const username = form.get("username") as string;
+            const email = form.get("email") as string;
+            const password = form.get("password") as string;
+            const confirm_password = form.get("confirm_password") as string;
+
+            if (password !== confirm_password) {
+                throw new Error("Passwords do not match");
+            }
+
+            const response = await Register(username, email, password);
+
+            if (response.status === 400) {
+                throw new Error("User already exists");
+            }
+
+            await login(email, password);
+            router.push("/profile");
+        } catch (error: any) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-
-        const response = await Register(username, email, password);
-        const data = await response.json();
-
-        await login(email, password);
-
-        if (!response.ok) {
-            return console.error(data.detail ?? `Request failed with status ${response.status}`);
-        }
-
-        router.push("/profile");
     }
 
     return (
@@ -75,7 +84,12 @@ export default function RegisterForm() {
                 value={formData.confirm_password}
                 onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
             />
-            <button type="submit">Register</button>
+            <button 
+                type="submit"
+                disabled={loading}
+            >
+                Register
+            </button>
         </form>
     );
 }

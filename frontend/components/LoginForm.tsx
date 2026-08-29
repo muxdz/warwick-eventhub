@@ -10,12 +10,23 @@ export default function LoginForm() {
     const router = useRouter();
 
     const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        await login(email, password);
-        router.push("/profile");
+        setLoading(true);
+        setError(null);
+
+        try {            
+            await login(email, password);
+            router.push("/profile");
+        } catch (error: any) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -36,7 +47,12 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
              />
-            <button type="submit">Login</button>
+            <button 
+                type="submit"
+                disabled={loading}
+            >
+                {loading ? "Logging in..." : "Login"}
+            </button>
         </form>
     );
 }

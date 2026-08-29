@@ -20,35 +20,45 @@ function toTimestampWithTimezone(localDateTime: string) {
 }
 
 export default function EventCreate({ societyId }: CreateEventFormProps) {
-    const [eventTitle, setEventTitle] = useState("");
-    const [eventLocation, setEventLocation] = useState("");
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-    const [description, setDescription] = useState("");
-    const [imageKey, setImageKey] = useState("");
+    const [formData, setFormData] = useState({
+        event_title: "",
+        event_location: "",
+        start_time: "",
+        end_time: "",
+        description: "",
+        image_key: ""
+    })
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [error, setError ] = useState<string | null>(null);
 
     async function handleCreateEvent(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const formData = new FormData(e.currentTarget);
+        setLoading(true);
+        setError(null);
 
-        const eventData = new URLSearchParams(); 
-    
-        eventData.append("event_title", formData.get("event_title") as string);
-        eventData.append("event_location", formData.get("event_location") as string);
-        eventData.append("start_time", toTimestampWithTimezone(startTime));
+        try {
+            const formData = new FormData(e.currentTarget);
+            const eventData = new URLSearchParams();
 
-        if (endTime) {
-            eventData.append("end_time", toTimestampWithTimezone(endTime));
+            eventData.append("event_title", formData.get("event_title") as string);
+            eventData.append("event_location", formData.get("event_location") as string);
+            eventData.append("start_time", formData.get("start_time") as string);
+            eventData.append("end_time", formData.get("end_time") as string);
+            eventData.append("description", formData.get("description") as string);
+            eventData.append("society_id", societyId.toString());
+            eventData.append("image_key", formData.get("image_key") as string);
+
+            const data = await CreateEvent(eventData);
+
+            router.push(`/events/${data.id}`);
+        } catch (error: any) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-        eventData.append("description", formData.get("description") as string);
-        eventData.append("society_id", societyId.toString());
-        eventData.append("image_key", formData.get("image_key") as string);
 
-        const data = await CreateEvent(eventData);
-
-        router.push(`/events/${data.id}`);
     }
 
     return (
@@ -57,8 +67,8 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 id="event_title" 
                 name="event_title" 
                 type="text" 
-                value={eventTitle} 
-                onChange={(event) => setEventTitle(event.target.value)} 
+                value={formData.event_title} 
+                onChange={(event) => setFormData({ ...formData, event_title: event.target.value })} 
                 placeholder="Event Title"
                 required
             />
@@ -66,8 +76,8 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 id="event_location" 
                 name="event_location" 
                 type="text" 
-                value={eventLocation} 
-                onChange={(event) => setEventLocation(event.target.value)} 
+                value={formData.event_location} 
+                onChange={(event) => setFormData({ ...formData, event_location: event.target.value })} 
                 placeholder="Event Location"
                 required
             />
@@ -75,8 +85,8 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 id="start_time" 
                 name="start_time" 
                 type="datetime-local" 
-                value={startTime} 
-                onChange={(event) => setStartTime(event.target.value)} 
+                value={formData.start_time} 
+                onChange={(event) => setFormData({ ...formData, start_time: event.target.value })} 
                 placeholder="Start Time"
                 required
             />
@@ -84,24 +94,24 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 id="end_time" 
                 name="end_time" 
                 type="datetime-local" 
-                value={endTime} 
-                onChange={(event) => setEndTime(event.target.value)} 
+                value={formData.end_time} 
+                onChange={(event) => setFormData({ ...formData, end_time: event.target.value })} 
                 placeholder="End Time"
             />
             <input
                 id="description"
                 name="description"
                 type="text"
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
+                value={formData.description}
+                onChange={(event) => setFormData({ ...formData, description: event.target.value })}
                 placeholder="Description"
             />
             <input
                 id="image_key"
                 name="image_key"
                 type="text"
-                value={imageKey}
-                onChange={(event) => setImageKey(event.target.value)}
+                value={formData.image_key}
+                onChange={(event) => setFormData({ ...formData, image_key: event.target.value })}
                 placeholder="Image Key"
             />
             <button type="submit">Create Event</button>
