@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function LoginForm() {
             await login(email, password);
             router.push("/profile");
         } catch (error: any) {
-            setError(error.message);
+            setError(error instanceof ApiError ? error.message : "Login failed");
         } finally {
             setLoading(false);
         }

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { Event } from "@/types/events";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
 
 type EventCardProps = {
     event: Event;
@@ -23,6 +24,7 @@ export default function EventCard({
     const [isUpdating, setIsUpdating] = useState(false);
     const [bookmarkError, setBookmarkError] = useState("");
     const { token } = useAuth();
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         setBookmarked(isBookmarked);
@@ -35,7 +37,7 @@ export default function EventCard({
 
         try {
             if (!token) {
-                throw new Error("Please log in to bookmark events");
+                throw new ApiError("Please log in to bookmark events", 401);
             }
 
             if (bookmarked) {
@@ -47,7 +49,23 @@ export default function EventCard({
             setBookmarked(nextBookmarked);
             onBookmarkChange?.(event_id, nextBookmarked);
         } catch (error) {
-            setBookmarkError(error instanceof Error ? error.message : "Could not update bookmark");
+            if (error instanceof ApiError) {
+                if (error.status === 401) {
+                    setError("Please log in to bookmark events");
+                }
+                else if (error.status === 403) {
+                    setError("You do not have permission to bookmark this event");
+                }
+                else if (error.status === 404) {
+                    setError("Event not found");
+                }
+                else if (error.status === 422) {
+                    setError("Invalid request");
+                }
+                else if (error.status === 500) {
+                    setError("Internal server error");
+                }
+            }
         } finally {
             setIsUpdating(false);
         }
