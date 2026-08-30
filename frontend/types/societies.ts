@@ -3,3 +3,7 @@ export type Society = {
     society_name: string;
     created_at: Date;
 }
+
+export type SocietyCreate = {
+    society_name: string;
+}

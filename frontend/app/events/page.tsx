@@ -5,18 +5,24 @@ import { GetEvents } from "@/services/events";
 import { useEffect, useState } from "react";
 import { GetBookmarks } from "@/services/bookmarks";
 import type { Event } from "@/types/events";
+import { useAuth } from "@/context/AuthContext";
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[] | null>(null);
     const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);
     const [loadError, setLoadError] = useState("");
+    const { token, loading: authLoading } = useAuth();
 
     useEffect(() => {
+        if (authLoading) {
+            return;
+        }
+
         async function loadEventsAndBookmarks() {
             try {
                 const [eventData, bookmarkData] = await Promise.all([
                     GetEvents(),
-                    GetBookmarks(),
+                    token ? GetBookmarks(token) : Promise.resolve([]),
                 ]);
                 setEvents(eventData ?? []);
                 setBookmarkedIds(bookmarkData.map((event) => event.id));
@@ -26,7 +32,7 @@ export default function EventsPage() {
         }
 
         void loadEventsAndBookmarks();
-    }, []);
+    }, [authLoading, token]);
 
     function handleBookmarkChange(eventId: number, isBookmarked: boolean) {
         setBookmarkedIds((currentIds) =>
@@ -37,9 +43,9 @@ export default function EventsPage() {
     }
 
     return (
-        <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+        <main className="page-shell">
             <div className="mb-8 text-center">
-                <h1 className="text-3xl font-bold text-slate-950 sm:text-4xl">Events</h1>
+                <p className="eyebrow">What&apos;s on</p><h1 className="page-title mt-2">Discover events</h1>
                 <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
                     Find events happening around Warwick.
                 </p>
@@ -51,10 +57,10 @@ export default function EventsPage() {
                 </p>
             )}
             {!loadError && events === null && (
-                <p className="text-center text-slate-600">Loading events...</p>
+                <p className="state-panel">Loading events...</p>
             )}
             {events?.length === 0 && (
-                <div className="mt-8 text-center">
+                <div className="state-panel mt-8">
                     <p className="text-base leading-7 text-slate-600 sm:text-lg">
                         No upcoming events found.
                     </p>

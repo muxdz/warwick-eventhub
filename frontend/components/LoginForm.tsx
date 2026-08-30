@@ -2,40 +2,39 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AUTH_CHANGED_EVENT, Login } from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
 
+    const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const form = new FormData(e.currentTarget);
+        setLoading(true);
+        setError(null);
 
-        const email = form.get("email") as string;
-        const password = form.get("password") as string;
-
-        const formData = new URLSearchParams();
-        formData.append("username", email);
-        formData.append("password", password);
-
-        const response = await Login(formData);
-        
-        const data = await response.json();
-
-        if (!response.ok) {
-            return console.error(data.detail ?? `Request failed with status ${response.status}`);
+        try {            
+            await login(email, password);
+            router.push("/profile");
+        } catch (error) {
+            setError(error instanceof ApiError ? error.message : "Login failed");
+        } finally {
+            setLoading(false);
         }
-
-        localStorage.setItem("access_token", data.access_token);
-        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
-        router.push("/profile");
     }
 
     return (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="styled-form">
+            <div className="mb-7"><p className="eyebrow">Welcome back</p><h1 className="mt-2 text-3xl font-bold text-[#44188c]">Log in to EventHub</h1><p className="mt-2 text-slate-600">Pick up where you left off.</p></div>
+            {error && <p role="alert">{error}</p>}
+            <label htmlFor="email">Email</label>
             <input
                 id="email"
                 name="email"
@@ -44,6 +43,7 @@ export default function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}     
             />
+            <label htmlFor="password">Password</label>
             <input 
                 id="password"
                 name="password" 
@@ -52,7 +52,12 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
              />
-            <button type="submit">Login</button>
+            <button 
+                type="submit"
+                disabled={loading}
+            >
+                {loading ? "Logging in..." : "Login"}
+            </button>
         </form>
     );
 }
