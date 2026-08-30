@@ -59,6 +59,7 @@ export default function RegisterForm() {
 
     return (
         <form onSubmit={handleRegister}>
+            <label htmlFor="username">Username</label>
             <input
                 id="username"
                 name="username"
@@ -67,6 +68,7 @@ export default function RegisterForm() {
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
+            <label htmlFor="email">Email</label>
             <input
                 id="email"
                 name="email"
@@ -75,6 +77,7 @@ export default function RegisterForm() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
+            <label htmlFor="password">Password</label>
             <input
                 id="password"
                 name="password"
@@ -83,6 +86,7 @@ export default function RegisterForm() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
+            <label htmlFor="confirm_password">Confirm Password</label>
             <input
                 id="confirm_password"
                 name="confirm_password"

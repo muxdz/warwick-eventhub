@@ -116,27 +116,32 @@ export default function EditEventForm({ event }: Props) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <label htmlFor="title">Title</label>
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
 
+      <label htmlFor="location">Location</label>
       <input
         value={location}
         onChange={(e) => setLocation(e.target.value)}
       />
 
+      <label htmlFor="description">Description</label>
       <input
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
 
+      <label htmlFor="start_time">Start Time</label>
       <input
         value={startTime}
         type="datetime-local"
         onChange={(e) => setStartTime(e.target.value)}
       />
 
+      <label htmlFor="end_time">End Time</label>
       <input
         value={endTime}
         type="datetime-local"

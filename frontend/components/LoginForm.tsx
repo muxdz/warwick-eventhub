@@ -32,6 +32,7 @@ export default function LoginForm() {
 
     return (
         <form onSubmit={handleLogin}>
+            <label htmlFor="email">Email</label>
             <input
                 id="email"
                 name="email"
@@ -40,6 +41,7 @@ export default function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}     
             />
+            <label htmlFor="password">Password</label>
             <input 
                 id="password"
                 name="password" 
