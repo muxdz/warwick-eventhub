@@ -51,9 +51,7 @@ export async function GetEvent(id: number): Promise<Event | null> {
     return reponse.json();
 }
 
-export async function CreateEvent(eventData: URLSearchParams) {
-    const token = localStorage.getItem("access_token");
-
+export async function CreateEvent(eventData: URLSearchParams, token: string): Promise<Event> {
     const response = await fetch (
         `${process.env.NEXT_PUBLIC_API_URL}/events`,
         {
