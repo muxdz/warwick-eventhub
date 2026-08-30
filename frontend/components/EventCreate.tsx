@@ -39,6 +39,8 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
     async function handleCreateEvent(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
+        const formData = new FormData(e.currentTarget);
+
         setLoading(true);
         setError(null);
 
@@ -53,21 +55,31 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 throw new ApiError("Not an organiser", 403);
             }
 
-            const formData = new FormData(e.currentTarget);
             const eventData = new URLSearchParams();
 
             eventData.append("event_title", formData.get("event_title") as string);
             eventData.append("event_location", formData.get("event_location") as string);
+
+            if (!formData.get("start_time")) {
+                throw new ApiError("Start time is required", 422);
+            }
+
             eventData.append("start_time", toTimestampWithTimezone(formData.get("start_time") as string));
-            eventData.append("end_time", toTimestampWithTimezone(formData.get("end_time") as string));
+            
+            if (formData.get("end_time")) {
+                eventData.append("end_time", toTimestampWithTimezone(formData.get("end_time") as string));
+            }
+
             eventData.append("description", formData.get("description") as string);
             eventData.append("society_id", societyId.toString());
             eventData.append("image_key", formData.get("image_key") as string);
 
-            const data = await CreateEvent(eventData);
+            const data = await CreateEvent(eventData, token);
 
             router.push(`/events/${data.id}`);
-        } catch (error: any) {
+        } catch (error) {
+            console.error(error);
+
             if (error instanceof ApiError) {
                 if (error.status === 401) {
                     setError("Please log in to create events");
