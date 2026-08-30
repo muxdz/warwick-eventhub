@@ -1,4 +1,5 @@
 import type { Society } from "@/types/societies";
+import { ApiError } from "./errors";
 
 export async function GetSocieties(): Promise<Society[]> {
     const reponse = await fetch (
@@ -22,7 +23,12 @@ export async function GetSociety(id: number): Promise<Society | null> {
     }
 
     if (!response.ok) {
-        throw new Error(response.status.toString());
+        const error = await response.json();
+
+        throw new ApiError(
+            error.detail ?? "Failed to get society",
+            response.status
+        );
     }
 
     return response.json();
