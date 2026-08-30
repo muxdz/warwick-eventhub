@@ -1,4 +1,5 @@
 import type { Event } from "@/types/events";
+import { ApiError } from "./errors";
 
 export type EventUpdate = {
     event_title?: string;
@@ -19,7 +20,11 @@ export async function GetEvents(): Promise<Event[] | null> {
 
     if (!reponse.ok) {
         const error = await reponse.json();
-        throw new Error(error.detail ?? `Request failed with status ${reponse.status}`);
+        
+        throw new ApiError(
+            error.detail ?? "Failed to get events",
+            reponse.status
+        )
     }
 
     return reponse.json();
@@ -36,7 +41,11 @@ export async function GetEvent(id: number): Promise<Event | null> {
 
     if (!reponse.ok) {
         const error = await reponse.json();
-        throw new Error(error.detail ?? `Request failed with status ${reponse.status}`);
+        
+        throw new ApiError(
+            error.detail ?? "Failed to get event",
+            reponse.status
+        )
     }
 
     return reponse.json();
@@ -59,7 +68,11 @@ export async function CreateEvent(eventData: URLSearchParams) {
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail ?? `Request failed with status ${response.status}`);
+        
+        throw new ApiError (
+            error.detail ?? "Failed to create event",
+            response.status
+        )
     }
 
     return response.json();
@@ -84,7 +97,11 @@ export async function UpdateEvent(
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail ?? `Request failed with status ${response.status}`);
+        
+        throw new ApiError (
+            error.detail ?? "Failed to update event",
+            response.status
+        )
     }
 
     return response.json();
@@ -103,7 +120,11 @@ export async function DeleteEvent(id: number, token: string) {
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail ?? `Request failed with status ${response.status}`);
+        
+        throw new ApiError (
+            error.detail ?? "Failed to delete event",
+            response.status
+        )
     }
 
 }
