@@ -6,4 +6,6 @@ export type Event = {
     end_time: string | null;
     description: string | null;
     society_id: number;
+    created_by_user_id: number;
+    image_key: string | null;
 }

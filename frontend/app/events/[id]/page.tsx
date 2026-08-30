@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GetEvent } from "@/services/events";
 import notFound from "@/app/events/[id]/not-found";
+import EventActions from "@/components/EventActions";
 
 type EventPageProps = {
   params: Promise<{
@@ -21,20 +22,20 @@ export default async function EventPage({
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="page-shell-narrow">
       <Link
         href="/events"
-        className="inline-flex rounded-md py-2 font-medium text-blue-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        className="text-link inline-flex py-2"
       >
         ← Back to events
       </Link>
 
-      <article className="mt-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-8">
-        <h1 className="text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">
+      <article className="card mt-5 p-6 sm:p-9">
+        <span className="rounded-full bg-[#eee5fc] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#44188c]">Warwick event</span><h1 className="mt-4 text-3xl font-bold leading-tight text-[#44188c] sm:text-4xl">
           {event.event_title}
         </h1>
 
-        <dl className="mt-8 grid gap-5 border-y border-slate-200 py-6 sm:grid-cols-2">
+        <dl className="mt-8 grid gap-5 rounded-xl bg-[#faf8ff] p-5 sm:grid-cols-2">
           <div>
             <dt className="text-sm font-semibold uppercase tracking-wide text-slate-500">Location</dt>
             <dd className="mt-1 text-lg text-slate-900">{event.event_location}</dd>
@@ -51,12 +52,17 @@ export default async function EventPage({
 
         {event.description && (
           <div className="mt-7">
-            <h2 className="text-xl font-semibold text-slate-950">About this event</h2>
+            <h2 className="text-xl font-semibold text-[#44188c]">About this event</h2>
             <p className="mt-3 max-w-prose text-base leading-7 text-slate-700 sm:text-lg">
               {event.description}
             </p>
           </div>
         )}
+
+        <EventActions 
+          eventId={eventID}
+          createdByUserId={event.created_by_user_id}  
+        />
       </article>
     </main>
   );
