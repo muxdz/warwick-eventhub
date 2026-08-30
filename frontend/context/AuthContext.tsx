@@ -9,6 +9,7 @@ import {
 
 import type { User } from "@/types/users";
 import { getUserData, Login } from "@/services/auth";
+import { ApiError } from "@/services/errors";
 
 type AuthContext = {
     user: User | null;
@@ -75,12 +76,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             try {
                 const user = await getUserData(storedToken);
-                setUser(user);
-            } catch {
-                logout();
-            }
 
-            setLoading(false);
+                setToken(storedToken);
+                setUser(user);
+            } catch (error) {
+                if (error instanceof ApiError) {
+                    if (error.status === 401) {
+                        logout();
+                    }
+                }
+
+                console.error(error);
+                
+            } finally {
+                setLoading(false);
+            }
         }
 
         restoreSession();
