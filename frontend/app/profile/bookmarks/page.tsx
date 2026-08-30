@@ -5,6 +5,7 @@ import { GetBookmarks } from "@/services/bookmarks";
 import { Event } from "@/types/events";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
 
 export default function BookmarksPage() {
     const [events, setEvents] = useState<Event[]>([]);
@@ -22,7 +23,23 @@ export default function BookmarksPage() {
                 const data = token ? await GetBookmarks(token) : [];
                 setEvents(data);
             } catch (error) {
-                setLoadError(error instanceof Error ? error.message : "Failed to load bookmarks");
+                if (error instanceof ApiError) {
+                    if (error.status === 401) {
+                        setLoadError("Please log in to view your bookmarks");
+                    }
+                    else if (error.status == 403) {
+                        setLoadError("You do not have permission to view your bookmarks");
+                    }
+                    else if (error.status === 404) {
+                        setLoadError("No bookmarks found");
+                    }
+                    else if (error.status === 422) {
+                        setLoadError("Invalid request");
+                    }
+                    else if (error.status === 500) {
+                        setLoadError("Internal server error");
+                    }
+                }
             } finally {
                 setIsLoading(false);
             }

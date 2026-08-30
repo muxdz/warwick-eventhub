@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Register } from "@/services/auth";
 import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
 
 export default function RegisterForm() {
     const [formData, setFormData] = useState({
@@ -32,19 +33,25 @@ export default function RegisterForm() {
             const confirm_password = form.get("confirm_password") as string;
 
             if (password !== confirm_password) {
-                throw new Error("Passwords do not match");
+                throw new ApiError("Passwords do not match", 400);
             }
 
             const response = await Register(username, email, password);
 
             if (response.status === 400) {
-                throw new Error("User already exists");
+                throw new ApiError("User already exists", 400);
             }
 
             await login(email, password);
             router.push("/profile");
         } catch (error: any) {
-            setError(error.message);
+            if (error instanceof ApiError) {
+                if (error.status === 400) {
+                    setError("User already exists");
+                }  else {
+                    setError("An error occurred while registering");
+                }
+            }
         } finally {
             setLoading(false);
         }

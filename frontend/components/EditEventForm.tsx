@@ -5,6 +5,7 @@ import type { Event as EventData } from "@/types/events";
 import { UpdateEvent, type EventUpdate } from "@/services/events";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
 
 type Props = {
   event: EventData;
@@ -57,7 +58,7 @@ export default function EditEventForm({ event }: Props) {
 
     try {
       if (!token) {
-        throw new Error("No token");
+        throw new ApiError("No token", 401);
       }
 
       const updates: EventUpdate = {};
@@ -83,7 +84,7 @@ export default function EditEventForm({ event }: Props) {
       }
 
       if (Object.keys(updates).length === 0) {
-        throw new Error("No updates");
+        throw new ApiError("No updates", 422);
       }
 
       await UpdateEvent(event.id, updates, token);
@@ -91,7 +92,23 @@ export default function EditEventForm({ event }: Props) {
 
       router.push(`/events/${event.id}`);
     } catch (error: any) {
-      setError(error.message);
+      if (error instanceof ApiError) {
+        if (error.status === 401) {
+          setError("Please log in to save changes");
+        }
+        else if (error.status == 403) {
+          setError("You do not have permission to save changes");
+        }
+        else if (error.status === 404) {
+          setError("Event not found");
+        }
+        else if (error.status === 422) {
+          setError("Invalid request");
+        }
+        else if (error.status === 500) {
+          setError("Internal server error");
+        }
+      }
     } finally {
       setLoading(false);
     }

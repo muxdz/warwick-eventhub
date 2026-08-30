@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useState } from "react";
+import { ApiError } from "@/services/errors";
 
 type EventActionsProps = {
     eventId: number;
@@ -40,17 +41,33 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
             )
 
             if (!confirmed) {
-                throw new Error("Event not deleted");
+                throw new ApiError("Event not deleted", 422);
             }
 
             if (!token) {
-                throw new Error("No token");
+                throw new ApiError("No token", 401);
             }
 
             DeleteEvent(eventId, token);
             router.push("/events");
         } catch (error: any) {
-            setError(error.message);
+            if (error instanceof ApiError) {
+                if (error.status === 401) {
+                    setError("Please log in to delete events");
+                }
+                else if (error.status === 403) {
+                    setError("You do not have permission to delete this event");
+                }
+                else if (error.status === 404) {
+                    setError("Event not found");
+                }
+                else if (error.status === 422) {
+                    setError("Invalid request");
+                }
+                else if (error.status === 500) {
+                    setError("Internal server error");
+                }
+            }
         } finally {
             setLoading(false);
         }

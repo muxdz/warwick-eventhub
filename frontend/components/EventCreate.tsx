@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreateEvent } from "@/services/events";
+import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/services/errors";
+import { isOrganiser } from "@/services/auth";
 
 type CreateEventFormProps = {
     societyId: number;
@@ -31,6 +34,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError ] = useState<string | null>(null);
+    const { token, user } = useAuth();
 
     async function handleCreateEvent(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -39,13 +43,23 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
         setError(null);
 
         try {
+            if (!token) {
+                throw new ApiError("No token", 401);
+            }
+
+            const canCreate = await isOrganiser(token, societyId);
+
+            if (!canCreate) {
+                throw new ApiError("Not an organiser", 403);
+            }
+
             const formData = new FormData(e.currentTarget);
             const eventData = new URLSearchParams();
 
             eventData.append("event_title", formData.get("event_title") as string);
             eventData.append("event_location", formData.get("event_location") as string);
-            eventData.append("start_time", formData.get("start_time") as string);
-            eventData.append("end_time", formData.get("end_time") as string);
+            eventData.append("start_time", toTimestampWithTimezone(formData.get("start_time") as string));
+            eventData.append("end_time", toTimestampWithTimezone(formData.get("end_time") as string));
             eventData.append("description", formData.get("description") as string);
             eventData.append("society_id", societyId.toString());
             eventData.append("image_key", formData.get("image_key") as string);
@@ -54,7 +68,23 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
 
             router.push(`/events/${data.id}`);
         } catch (error: any) {
-            setError(error.message);
+            if (error instanceof ApiError) {
+                if (error.status === 401) {
+                    setError("Please log in to create events");
+                }
+                else if (error.status === 403) {
+                    setError("You do not have permission to create events");
+                }
+                else if (error.status === 404) {
+                    setError("Society not found");
+                }
+                else if (error.status === 422) {
+                    setError("Invalid request");
+                }
+                else if (error.status === 500) {
+                    setError("Internal server error");
+                }
+            }
         } finally {
             setLoading(false);
         }
