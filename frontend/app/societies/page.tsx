@@ -6,30 +6,22 @@ export default async function SocietiesPage() {
     const societies = await GetSocieties();
 
     return (
-        <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-            <div className="mb-8 text-center">
-                <h1 className="text-3xl font-bold text-slate-950 sm:text-4xl">Societies</h1>
+        <main className="page-shell">
+            <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+              <div><p className="eyebrow">Find your community</p><h1 className="page-title mt-2">Societies</h1>
                 <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
                     Find student societies at Warwick.
-                </p>
+                </p></div><Link href="/societies/create" className="btn btn-primary shrink-0">Create a society</Link>
             </div>
 
             {societies.length === 0 ? (
-                <p className="mt-8 text-center text-base leading-7 text-slate-600 sm:text-lg">
+                <p className="state-panel mt-8">
                     No societies found.
                 </p>
             ) : (
                 <SocietyList societies={societies} />
             )}
 
-            <div>
-                <Link
-                    href="/societies/create"
-                    className="inline-flex rounded-md py-2 font-medium text-blue-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                >
-                    Create a society &rarr;
-                </Link>
-            </div>
         </main>
     );
 }

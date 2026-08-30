@@ -74,21 +74,21 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
     }
 
     return (
-        <div>
+        <div className="mt-8 border-t border-[#e7e1ef] pt-6">
             {canEdit && (
                 <>
-                {error && <p role="alert">{error}</p>}
-                <Link href={`/events/${eventId}/edit`}>
+                {error && <p className="form-error mb-4" role="alert">{error}</p>}
+                <div className="flex flex-wrap gap-3"><Link href={`/events/${eventId}/edit`} className="btn btn-secondary">
                     Edit
                 </Link>
 
                 <button
                     onClick={handleDeleteEvent}
-                    className="inline-flex rounded-md py-2 font-medium text-red-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                    className="btn btn-danger"
                     disabled={loading}
                 >
                     {loading ? "Deleting..." : "Delete"}
-                </button>
+                </button></div>
                 </>
             )}
         </div>

@@ -18,7 +18,7 @@ export default function SocietyList({ societies }: SocietyListProps) {
 
     return (
         <div>
-            <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+            <div className="card mb-8 flex flex-col gap-3 p-3 sm:flex-row">
                 <label htmlFor="society-search" className="sr-only">
                     Search societies by name
                 </label>
@@ -28,20 +28,20 @@ export default function SocietyList({ societies }: SocietyListProps) {
                     placeholder="Search societies"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-950 placeholder:text-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                    className="field-input min-w-0 flex-1 border-0 bg-[#faf8ff]"
                 />
                 <button
                     type="button"
                     onClick={() => setSearch("")}
                     disabled={!search}
-                    className="rounded-lg border border-slate-300 bg-white px-5 py-3 font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    className="btn btn-secondary sm:w-auto"
                 >
                     Clear
                 </button>
             </div>
 
             {filteredSocieties.length === 0 ? (
-                <p className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-slate-700">
+                <p className="state-panel">
                     No societies match your search. Try another search.
                 </p>
             ) : (

@@ -1,21 +1,47 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-button,
-input {
-  font: inherit;
+:root { --background:#fff; --foreground:#25202d; --primary:#8550da; --primary-hover:#7442c6; --primary-dark:#44188c; --primary-light:#cdafff; --surface-soft:#faf8ff; --border:#e7e1ef; --muted:#6b6474; }
+html { scroll-behavior:smooth; }
+body { min-height:100vh; background:var(--background); color:var(--foreground); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+* { box-sizing:border-box; }
+button,input,textarea { font:inherit; }
+button,a { -webkit-tap-highlight-color:transparent; }
+::selection { background:#e4d5fb; color:var(--primary-dark); }
+@layer components {
+ .page-shell { @apply mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8; }
+ .page-shell-narrow { @apply mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14; }
+ .page-title { @apply text-3xl font-bold tracking-tight sm:text-4xl; color:var(--primary-dark); }
+ .page-intro { @apply mt-3 text-base leading-7 sm:text-lg; color:var(--muted); }
+ .card { @apply rounded-2xl border bg-white; border-color:var(--border); box-shadow:0 8px 28px rgba(68,24,140,.07); }
+ .interactive-card { @apply transition duration-200; }
+ .interactive-card:hover { border-color:#cdb7ef; box-shadow:0 14px 34px rgba(68,24,140,.12); transform:translateY(-2px); }
+ .btn { @apply inline-flex min-h-11 items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50; }
+ .btn-primary { @apply text-white; background:var(--primary); }
+ .btn-primary:hover { background:var(--primary-hover); }
+ .btn-primary:focus-visible,.btn-secondary:focus-visible,.btn-soft:focus-visible { outline-color:var(--primary); }
+ .btn-secondary { @apply border bg-white; border-color:#bca1e7; color:var(--primary-dark); }
+ .btn-secondary:hover { background:var(--surface-soft); border-color:var(--primary); }
+ .btn-soft { background:#eee5fc; color:var(--primary-dark); }
+ .btn-soft:hover { background:#e3d4fa; }
+ .btn-danger { @apply border border-red-200 bg-white text-red-700 hover:bg-red-50 focus-visible:outline-red-600; }
+ .form-card { @apply mx-auto max-w-xl rounded-2xl border bg-white p-6 sm:p-8; border-color:var(--border); box-shadow:0 8px 28px rgba(68,24,140,.07); }
+ .form-stack { @apply space-y-5; }
+ .field-group { @apply space-y-2; }
+ .field-label { @apply block text-sm font-semibold; color:#38303f; }
+ .field-input { @apply block min-h-12 w-full rounded-lg border bg-white px-3.5 py-2.5 text-base outline-none transition placeholder:text-slate-400; border-color:#d8cfdf; color:var(--foreground); }
+ .field-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(133,80,218,.16); }
+ textarea.field-input { @apply min-h-32 resize-y; }
+ .form-error { @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700; }
+ .styled-form { @apply mx-auto max-w-xl space-y-2 rounded-2xl border bg-white p-6 sm:p-8; border-color:var(--border); box-shadow:0 8px 28px rgba(68,24,140,.07); }
+ .styled-form label { @apply mt-5 block text-sm font-semibold first:mt-0; color:#38303f; }
+ .styled-form input,.styled-form textarea { @apply block min-h-12 w-full rounded-lg border bg-white px-3.5 py-2.5 text-base outline-none transition placeholder:text-slate-400; border-color:#d8cfdf; color:var(--foreground); }
+ .styled-form input:focus,.styled-form textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(133,80,218,.16); }
+ .styled-form textarea { @apply min-h-32 resize-y; }
+ .styled-form button[type="submit"] { @apply mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50; background:var(--primary); }
+ .styled-form button[type="submit"]:hover { background:var(--primary-hover); }
+ .styled-form button[type="submit"]:focus-visible { outline-color:var(--primary); }
+ .styled-form [role="alert"] { @apply mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700; }
+ .state-panel { @apply rounded-2xl border px-6 py-10 text-center; border-color:var(--border); background:var(--surface-soft); color:var(--muted); }
+ .eyebrow { @apply text-sm font-bold uppercase tracking-[.18em]; color:var(--primary); }
+ .text-link { @apply font-semibold underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2; color:var(--primary-hover); }
+ .text-link:focus-visible { outline-color:var(--primary); }
 }

@@ -58,7 +58,8 @@ export default function RegisterForm() {
     }
 
     return (
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleRegister} className="styled-form">
+            <div className="mb-7"><p className="eyebrow">Join the community</p><h1 className="mt-2 text-3xl font-bold text-[#44188c]">Create your account</h1><p className="mt-2 text-slate-600">Start discovering more of campus.</p></div>
             {error && <p role="alert">{error}</p>}
             <label htmlFor="username">Username</label>
             <input
@@ -100,7 +101,7 @@ export default function RegisterForm() {
                 type="submit"
                 disabled={loading}
             >
-                Register
+                {loading ? "Creating account..." : "Create account"}
             </button>
         </form>
     );

@@ -37,7 +37,7 @@ export default function SocietyCreateForm() {
     }
 
     return (
-        <form onSubmit={handleCreateSociety}>
+        <form onSubmit={handleCreateSociety} className="styled-form">
             {error && <p role="alert">{error}</p>}
             <label htmlFor="name">Name</label>
             <input

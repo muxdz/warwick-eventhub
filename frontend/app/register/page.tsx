@@ -2,7 +2,7 @@ import RegisterForm from "@/components/RegisterForm";
 
 export default function RegisterPage() {
     return (
-        <main>
+        <main className="page-shell-narrow">
             <RegisterForm />
         </main>
     );

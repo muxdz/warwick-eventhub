@@ -34,7 +34,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError ] = useState<string | null>(null);
-    const { token, user } = useAuth();
+    const { token } = useAuth();
 
     async function handleCreateEvent(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -104,7 +104,8 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
     }
 
     return (
-        <form onSubmit={handleCreateEvent}>
+        <form onSubmit={handleCreateEvent} className="styled-form">
+            <div className="mb-7"><p className="eyebrow">Share what&apos;s next</p><h1 className="mt-2 text-3xl font-bold text-[#44188c]">Create an event</h1><p className="mt-2 text-slate-600">Add the details students need to find and join your event.</p></div>
             {error && <p role="alert">{error}</p>}
             <label htmlFor="event_title">Event Title</label>
             <input 
@@ -146,10 +147,9 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 placeholder="End Time"
             />
             <label htmlFor="description">Description</label>
-            <input
+            <textarea
                 id="description"
                 name="description"
-                type="text"
                 value={formData.description}
                 onChange={(event) => setFormData({ ...formData, description: event.target.value })}
                 placeholder="Description"

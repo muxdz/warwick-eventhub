@@ -24,16 +24,16 @@ export default async function SocietyPage({ params }: SocietyPageProps) {
     }
 
     return (
-        <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+        <main className="page-shell-narrow">
             <Link
                 href="/societies"
-                className="inline-flex rounded-md py-2 font-medium text-blue-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="text-link inline-flex py-2"
             >
                 &larr; Back to societies
             </Link>
 
-            <article className="mt-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-8">
-                <h1 className="text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">
+            <article className="card mt-5 p-6 sm:p-9">
+                <span className="mb-5 grid size-14 place-items-center rounded-2xl bg-[#eee5fc] text-xl font-bold text-[#7442c6]" aria-hidden="true">{society.society_name.charAt(0).toUpperCase()}</span><h1 className="text-3xl font-bold leading-tight text-[#44188c] sm:text-4xl">
                     {society.society_name}
                 </h1>
 

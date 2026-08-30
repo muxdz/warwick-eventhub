@@ -115,28 +115,32 @@ export default function EditEventForm({ event }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="styled-form">
       {error && <p role="alert">{error}</p>}
       <label htmlFor="title">Title</label>
       <input
+        id="title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
 
       <label htmlFor="location">Location</label>
       <input
+        id="location"
         value={location}
         onChange={(e) => setLocation(e.target.value)}
       />
 
       <label htmlFor="description">Description</label>
-      <input
+      <textarea
+        id="description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
 
       <label htmlFor="start_time">Start Time</label>
       <input
+        id="start_time"
         value={startTime}
         type="datetime-local"
         onChange={(e) => setStartTime(e.target.value)}
@@ -144,6 +148,7 @@ export default function EditEventForm({ event }: Props) {
 
       <label htmlFor="end_time">End Time</label>
       <input
+        id="end_time"
         value={endTime}
         type="datetime-local"
         onChange={(e) => setEndTime(e.target.value)}
