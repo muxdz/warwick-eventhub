@@ -50,7 +50,7 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
 
             DeleteEvent(eventId, token);
             router.push("/events");
-        } catch (error: any) {
+        } catch (error) {
             if (error instanceof ApiError) {
                 if (error.status === 401) {
                     setError("Please log in to delete events");

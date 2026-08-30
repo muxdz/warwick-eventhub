@@ -44,7 +44,7 @@ export default function RegisterForm() {
 
             await login(email, password);
             router.push("/profile");
-        } catch (error: any) {
+        } catch (error) {
             if (error instanceof ApiError) {
                 if (error.status === 400) {
                     setError("User already exists");

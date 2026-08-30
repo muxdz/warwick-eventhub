@@ -91,7 +91,7 @@ export default function EditEventForm({ event }: Props) {
       console.log("Event updated");
 
       router.push(`/events/${event.id}`);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof ApiError) {
         if (error.status === 401) {
           setError("Please log in to save changes");

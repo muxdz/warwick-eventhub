@@ -23,7 +23,7 @@ export default function LoginForm() {
         try {            
             await login(email, password);
             router.push("/profile");
-        } catch (error: any) {
+        } catch (error) {
             setError(error instanceof ApiError ? error.message : "Login failed");
         } finally {
             setLoading(false);
