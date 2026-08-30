@@ -1,4 +1,5 @@
 import { User } from "@/types/users";
+import { ApiError } from "./errors";
 
 export const AUTH_CHANGED_EVENT = "auth-changed";
 
@@ -29,6 +30,15 @@ export async function getUserData(token: string): Promise<User> {
             }
         }
     );
+
+    if (!response.ok) {
+        const error = await response.json();
+        
+        throw new ApiError(
+            error.detail ?? "Failed to get user data",
+            response.status
+        )
+    }
 
     return response.json();
 }
