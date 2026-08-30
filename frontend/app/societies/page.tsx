@@ -1,5 +1,6 @@
 import SocietyList from "@/components/SocietyList";
 import { GetSocieties } from "@/services/societies";
+import Link from "next/link";
 
 export default async function SocietiesPage() {
     const societies = await GetSocieties();
@@ -20,6 +21,15 @@ export default async function SocietiesPage() {
             ) : (
                 <SocietyList societies={societies} />
             )}
+
+            <div>
+                <Link
+                    href="/societies/create"
+                    className="inline-flex rounded-md py-2 font-medium text-blue-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                >
+                    Create a society &rarr;
+                </Link>
+            </div>
         </main>
     );
 }
