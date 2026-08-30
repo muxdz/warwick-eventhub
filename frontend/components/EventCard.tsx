@@ -24,7 +24,6 @@ export default function EventCard({
     const [isUpdating, setIsUpdating] = useState(false);
     const [bookmarkError, setBookmarkError] = useState("");
     const { token } = useAuth();
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         setBookmarked(isBookmarked);
@@ -51,19 +50,19 @@ export default function EventCard({
         } catch (error) {
             if (error instanceof ApiError) {
                 if (error.status === 401) {
-                    setError("Please log in to bookmark events");
+                    setBookmarkError("Please log in to bookmark events");
                 }
                 else if (error.status === 403) {
-                    setError("You do not have permission to bookmark this event");
+                    setBookmarkError("You do not have permission to bookmark this event");
                 }
                 else if (error.status === 404) {
-                    setError("Event not found");
+                    setBookmarkError("Event not found");
                 }
                 else if (error.status === 422) {
-                    setError("Invalid request");
+                    setBookmarkError("Invalid request");
                 }
                 else if (error.status === 500) {
-                    setError("Internal server error");
+                    setBookmarkError("Internal server error");
                 }
             }
         } finally {
