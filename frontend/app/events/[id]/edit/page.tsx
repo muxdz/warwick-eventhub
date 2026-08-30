@@ -20,9 +20,8 @@ export default async function EditEventPage({ params }: Props) {
   }
 
   return (
-    <main>
-      <h1>Edit event</h1>
-
+    <main className="page-shell-narrow">
+      <div className="mb-8 text-center"><p className="eyebrow">Event management</p><h1 className="page-title mt-2">Edit event</h1><p className="page-intro">Update the event information below.</p></div>
       <EditEventForm event={event} />
     </main>
   );

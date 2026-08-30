@@ -1,29 +1,3 @@
 "use client";
-
 import { useAuth } from "@/context/AuthContext";
-
-export default function Profile() {
-    const { user, loading } = useAuth();
-
-    if (loading) {
-        return <main><p>Loading profile...</p></main>;
-    }
-
-    if (!user) {
-        return <main><h1>Profile</h1><p>You are not logged in.</p></main>;
-    }
-
-    const createdTime = new Date(user.created_at);
-
-    return (
-        <main>
-            <h1>Profile</h1>
-            <p>ID: {user.id}</p>
-            <p>Name: {user.user_name}</p>
-            <p>Email: {user.email}</p>
-            <p>
-                <time dateTime={user.created_at.toString()}>{createdTime.toLocaleString("en-GB")}</time>
-            </p>
-        </main>
-    );
-}
+export default function Profile(){const{user,loading}=useAuth();if(loading)return <div className="state-panel">Loading your profile...</div>;if(!user)return <div className="state-panel"><h1 className="text-2xl font-bold text-[#44188c]">Profile</h1><p className="mt-2">You are not logged in.</p></div>;const createdTime=new Date(user.created_at);return <section className="card overflow-hidden"><div className="bg-[#44188c] p-6 text-white sm:p-8"><div className="grid size-16 place-items-center rounded-2xl bg-white/15 text-2xl font-bold" aria-hidden="true">{user.user_name.charAt(0).toUpperCase()}</div><h1 className="mt-5 text-3xl font-bold">{user.user_name}</h1><p className="mt-1 text-purple-100">Your EventHub profile</p></div><dl className="grid gap-6 p-6 sm:grid-cols-2 sm:p-8"><div><dt className="text-sm font-semibold uppercase tracking-wide text-slate-500">Email</dt><dd className="mt-1 break-words text-slate-900">{user.email}</dd></div><div><dt className="text-sm font-semibold uppercase tracking-wide text-slate-500">Member since</dt><dd className="mt-1 text-slate-900"><time dateTime={user.created_at.toString()}>{createdTime.toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</time></dd></div></dl></section>}

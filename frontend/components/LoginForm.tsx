@@ -31,7 +31,8 @@ export default function LoginForm() {
     }
 
     return (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="styled-form">
+            <div className="mb-7"><p className="eyebrow">Welcome back</p><h1 className="mt-2 text-3xl font-bold text-[#44188c]">Log in to EventHub</h1><p className="mt-2 text-slate-600">Pick up where you left off.</p></div>
             {error && <p role="alert">{error}</p>}
             <label htmlFor="email">Email</label>
             <input

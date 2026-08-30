@@ -2,13 +2,13 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main>
-      <h1>Event not found</h1>
-      <p>This event may have been deleted or does not exist.</p>
+    <main className="page-shell-narrow text-center">
+      <div className="state-panel"><h1 className="page-title">Event not found</h1>
+      <p className="page-intro">This event may have been deleted or does not exist.</p>
 
-      <Link href="/events">
+      <Link href="/events" className="btn btn-primary mt-7">
         Browse all events
-      </Link>
+      </Link></div>
     </main>
   );
 }

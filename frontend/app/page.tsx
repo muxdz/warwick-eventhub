@@ -1,19 +1,4 @@
+import Link from "next/link";
 import SocietyCard from "@/components/SocietyCard";
 import { GetSocieties } from "@/services/societies";
-
-export default async function Home() {
-  const societies = await GetSocieties();
-
-  return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">Welcome to EventHub</h1>
-      <p className="mt-3 text-lg leading-7 text-slate-600">Discover what&apos;s happening around campus.</p>
-
-      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {societies.map((society) => (
-        <SocietyCard key={society.id} society={society} />
-      ))}
-      </div>
-    </main>
-  );
-}
+export default async function Home(){const societies=await GetSocieties();const featured=societies.slice(0,6);return <main><section className="overflow-hidden border-b border-[#eee8f5] bg-[radial-gradient(circle_at_top_right,#eee3ff_0,transparent_38%),linear-gradient(180deg,#fff_0%,#faf8ff_100%)]"><div className="page-shell grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[1.2fr_.8fr] lg:py-24"><div><p className="eyebrow">Your campus, connected</p><h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight tracking-tight text-[#44188c] sm:text-5xl lg:text-6xl">Discover what&apos;s happening at Warwick</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Find your next night out, talk, workshop or community. EventHub brings Warwick&apos;s student events and societies together in one place.</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><Link href="/events" className="btn btn-primary px-6">Browse events <span aria-hidden="true" className="ml-2">→</span></Link><Link href="/societies" className="btn btn-secondary px-6">Explore societies</Link></div></div><div className="card relative hidden min-h-72 overflow-hidden bg-[#44188c] p-8 text-white lg:block" aria-hidden="true"><div className="absolute -right-16 -top-16 size-56 rounded-full bg-[#cdafff]/30"/><div className="absolute -bottom-20 -left-12 size-56 rounded-full bg-[#8550da]"/><div className="relative grid h-full content-between gap-16"><span className="w-fit rounded-full bg-white/15 px-4 py-2 text-sm font-semibold">Made for Warwick students</span><div><p className="text-5xl font-bold">Explore.</p><p className="mt-2 text-5xl font-bold text-[#cdafff]">Connect.</p><p className="mt-2 text-5xl font-bold">Belong.</p></div></div></div></div></section><section className="page-shell"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="eyebrow">Find your people</p><h2 className="mt-2 text-2xl font-bold text-[#44188c] sm:text-3xl">Explore student societies</h2><p className="mt-2 text-slate-600">Discover communities built around the things you care about.</p></div><Link href="/societies" className="text-link shrink-0">View all societies →</Link></div>{featured.length?<div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{featured.map(s=><SocietyCard key={s.id} society={s}/>)}</div>:<div className="state-panel mt-8">No societies have been added yet.</div>}</section></main>}
