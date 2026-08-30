@@ -105,6 +105,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
 
     return (
         <form onSubmit={handleCreateEvent}>
+            {error && <p role="alert">{error}</p>}
             <label htmlFor="event_title">Event Title</label>
             <input 
                 id="event_title" 

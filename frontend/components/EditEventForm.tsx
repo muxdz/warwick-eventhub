@@ -116,6 +116,7 @@ export default function EditEventForm({ event }: Props) {
 
   return (
     <form onSubmit={handleSubmit}>
+      {error && <p role="alert">{error}</p>}
       <label htmlFor="title">Title</label>
       <input
         value={title}

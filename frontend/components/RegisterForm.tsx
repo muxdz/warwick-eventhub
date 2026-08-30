@@ -59,6 +59,7 @@ export default function RegisterForm() {
 
     return (
         <form onSubmit={handleRegister}>
+            {error && <p role="alert">{error}</p>}
             <label htmlFor="username">Username</label>
             <input
                 id="username"

@@ -32,6 +32,7 @@ export default function LoginForm() {
 
     return (
         <form onSubmit={handleLogin}>
+            {error && <p role="alert">{error}</p>}
             <label htmlFor="email">Email</label>
             <input
                 id="email"

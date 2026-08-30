@@ -77,6 +77,7 @@ export default function EventActions({ eventId, createdByUserId }: EventActionsP
         <div>
             {canEdit && (
                 <>
+                {error && <p role="alert">{error}</p>}
                 <Link href={`/events/${eventId}/edit`}>
                     Edit
                 </Link>
