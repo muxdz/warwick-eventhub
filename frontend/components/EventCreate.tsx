@@ -93,6 +93,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
 
     return (
         <form onSubmit={handleCreateEvent}>
+            <label htmlFor="event_title">Event Title</label>
             <input 
                 id="event_title" 
                 name="event_title" 
@@ -102,6 +103,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 placeholder="Event Title"
                 required
             />
+            <label htmlFor="event_location">Event Location</label>
             <input 
                 id="event_location" 
                 name="event_location" 
@@ -111,6 +113,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 placeholder="Event Location"
                 required
             />
+            <label htmlFor="start_time">Start Time</label>
             <input 
                 id="start_time" 
                 name="start_time" 
@@ -120,6 +123,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 placeholder="Start Time"
                 required
             />
+            <label htmlFor="end_time">End Time</label>
             <input 
                 id="end_time" 
                 name="end_time" 
@@ -128,6 +132,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 onChange={(event) => setFormData({ ...formData, end_time: event.target.value })} 
                 placeholder="End Time"
             />
+            <label htmlFor="description">Description</label>
             <input
                 id="description"
                 name="description"
@@ -136,6 +141,7 @@ export default function EventCreate({ societyId }: CreateEventFormProps) {
                 onChange={(event) => setFormData({ ...formData, description: event.target.value })}
                 placeholder="Description"
             />
+            <label htmlFor="image_key">Image Key</label>
             <input
                 id="image_key"
                 name="image_key"
