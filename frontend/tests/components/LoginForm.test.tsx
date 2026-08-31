@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { test, expect, vi } from "vitest";
+import { test, expect, vi, beforeEach } from "vitest";
 import LoginForm from "@/components/LoginForm";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { userEvent } from "@testing-library/user-event";
 
 const user = userEvent.setup();
@@ -12,6 +12,30 @@ vi.mock("next/navigation", () => ({
             push: mockPush,
         }),
     }));
+
+vi.mock("@/context/AuthContext", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@/context/AuthContext")>();
+
+    return {
+        ...actual,
+        useAuth: vi.fn(),
+    }
+});
+
+const mockeduseAuth = vi.mocked(useAuth);
+const mockLogin = vi.fn();
+
+beforeEach(() => {
+    mockLogin.mockReset();
+
+    mockeduseAuth.mockReturnValue({
+        user: null,
+        token: null,
+        loading: false,
+        login: mockLogin,
+        logout: vi.fn(),
+    });
+});
 
 test("email field exists", () => {
     render(
@@ -75,4 +99,29 @@ test("password input works", async () => {
     await user.type(passwordInput, "password");
 
     expect(passwordInput).toHaveValue("password");
+})
+
+test("submits email and password", async () => {
+    mockLogin.mockResolvedValue(undefined);
+
+    const user = userEvent.setup();
+
+    render(
+        <AuthProvider>
+        <LoginForm />
+        </AuthProvider>
+    );
+
+    const emailInput = screen.getByRole("textbox", { name: /email/i });
+    const passwordInput = screen.getByLabelText(/password/i);
+    const loginButton = screen.getByRole("button", { name: /login/i });
+
+    await user.type(emailInput, "test@example.com");
+    await user.type(passwordInput, "password");
+    await user.click(loginButton);
+
+    expect(emailInput).toHaveValue("test@example.com");
+    expect(passwordInput).toHaveValue("password");
+
+    expect(mockLogin).toHaveBeenCalledWith("test@example.com", "password");
 })
