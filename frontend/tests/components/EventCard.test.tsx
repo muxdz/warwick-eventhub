@@ -66,11 +66,6 @@ test("renders event location", () => {
 })
 
 test("no description rendered", () => {
-    const eventWithoutDescription: Event = {
-    ...testEvent,
-    description: null,
-    };
-
     render(
         <AuthProvider>
         <EventCard 
@@ -83,5 +78,37 @@ test("no description rendered", () => {
     
     expect(
         screen.queryByText("Test Description")
+    ).not.toBeInTheDocument();
+})
+
+test("no end time rendered", () => {
+    render(
+        <AuthProvider>
+        <EventCard 
+            event={eventWithoutEndTime}
+            isBookmarked={false} 
+            onBookmarkChange={handleBookmarkChange}
+        />
+        </AuthProvider>
+    );
+    
+    expect(
+        screen.queryByText("12:00")
+    ).not.toBeInTheDocument();
+})
+
+test("no image rendered", () => {
+    render(
+        <AuthProvider>
+        <EventCard 
+            event={eventWithoutImage}
+            isBookmarked={false} 
+            onBookmarkChange={handleBookmarkChange}
+        />
+        </AuthProvider>
+    );
+    
+    expect(
+        screen.queryByAltText("Test Event")
     ).not.toBeInTheDocument();
 })
