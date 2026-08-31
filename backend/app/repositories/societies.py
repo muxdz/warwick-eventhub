@@ -54,7 +54,7 @@ def create_society(society_data):
                 VALUES (%s)
                 RETURNING 
                     id,
-                    society_name;
+                    society_name,
                     created_at;
                 """,
                 (
