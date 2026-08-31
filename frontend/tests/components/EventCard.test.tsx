@@ -16,6 +16,21 @@ const testEvent: Event = {
     created_by_user_id: 1
 }
 
+const eventWithoutDescription: Event = {
+    ...testEvent,
+    description: null
+}
+
+const eventWithoutEndTime: Event = {
+    ...testEvent,
+    end_time: null
+}
+
+const eventWithoutImage: Event = {
+    ...testEvent,
+    image_key: null
+}
+
 const handleBookmarkChange = vi.fn();
 
 test("renders event title", () => {
@@ -46,6 +61,27 @@ test("renders event location", () => {
     );
     
     expect(
-        screen.getByText("Test Location")
-    ).toBeInTheDocument();
+        screen.getAllByText("Test Location").length
+    ).toBeGreaterThan(0);
+})
+
+test("no description rendered", () => {
+    const eventWithoutDescription: Event = {
+    ...testEvent,
+    description: null,
+    };
+
+    render(
+        <AuthProvider>
+        <EventCard 
+            event={eventWithoutDescription}
+            isBookmarked={false} 
+            onBookmarkChange={handleBookmarkChange}
+        />
+        </AuthProvider>
+    );
+    
+    expect(
+        screen.queryByText("Test Description")
+    ).not.toBeInTheDocument();
 })
