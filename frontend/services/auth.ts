@@ -18,6 +18,15 @@ export async function Login(email: string, password: string) {
         }
     );
 
+    if (!response.ok) {
+        const error = await response.json();
+        
+        throw new ApiError(
+            error.detail ?? "Login failed",
+            response.status
+        )
+    }
+
     return response;
 }
 

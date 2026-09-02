@@ -33,7 +33,7 @@ def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
     user = user_repository.get_user_by_email(email)
 
-    if user is None or not verify_password(password, user["password_hash"]):
+    if not user or not verify_password(password, user["password_hash"]):
         raise HTTPException(
             status_code=401,
             detail="Incorrect credentials"
