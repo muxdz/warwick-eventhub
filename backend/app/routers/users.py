@@ -72,3 +72,37 @@ def create_user(user_data: UserCreate):
     password_hash = hash_password(user_data.password)
 
     return user_repository.create_user(user_data, password_hash)
+
+@users_router.delete("/users/me")
+def delete_user(current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
+    deleted_user = user_repository.delete_user(user_id)
+
+    if not deleted_user:
+        raise HTTPException(
+            status_code=404, 
+            detail="User not found"
+        )
+
+    return {"message": "User deleted"}
+
+@users_router.patch("/users/me", status_code=200)
+def update_user(user_data: UserUpdate, current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
+    updates = user_data.model_dump(exclude_unset=True)
+
+    if not updates:
+        raise HTTPException(
+            status_code=400,
+            detail="No updates provided"
+        )
+
+    updated_user = user_repository.update_user(user_id, updates)
+
+    if updated_user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return updated_user
