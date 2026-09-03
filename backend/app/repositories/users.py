@@ -101,7 +101,11 @@ def update_user(user_id: int, user_updates):
                     UPDATE users
                     SET {update_clause}
                     WHERE id = %s
-                    RETURNING *;
+                    RETURNING
+                        id,
+                        user_name,
+                        email,
+                        created_at;
                     """,
                     (
                         values
@@ -109,3 +113,22 @@ def update_user(user_id: int, user_updates):
                 )
     
                 return cur.fetchone()
+
+def update_user_password(user_id: int, new_password_hash: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE users
+                SET password_hash = %s
+                WHERE id = %s
+                RETURNING
+                    id,
+                    user_name,
+                    email,
+                    created_at;
+                """,
+                (new_password_hash, user_id)
+            )
+
+            return cur.fetchone()

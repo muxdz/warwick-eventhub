@@ -15,15 +15,17 @@ class UserResponse(BaseModel):
 class UserUpdate(BaseModel):
     user_name: str | None = None
     email: EmailStr | None = None
-    password: str | None = None
 
     @field_validator(
             "user_name",
             "email",
-            "password",
         )
     @classmethod
     def required_fields_cannot_be_null(cls, value):
         if value is None:
             raise ValueError("field cannot be null")
         return value
+
+class PasswordUpdate(BaseModel):
+    old_password: str
+    new_password: str

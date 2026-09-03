@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.repositories import users as user_repository
 
-from app.schemas.users import UserCreate, UserUpdate, UserResponse
+from app.schemas.users import UserCreate, UserUpdate, UserResponse, PasswordUpdate
 
 from app.security import hash_password, verify_password, get_current_user, create_access_token, oauth2_scheme
 
@@ -106,3 +106,25 @@ def update_user(user_data: UserUpdate, current_user = Depends(get_current_user))
         )
 
     return updated_user
+
+@users_router.patch("/users/me/password", status_code=200)
+def update_password(password_data: PasswordUpdate, current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
+    user = user_repository.get_user_by_id(user_id)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    if not verify_password(password_data.old_password, user["password_hash"]):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect old password"
+        )
+
+    new_password_hash = hash_password(password_data.new_password)
+    updated_user = user_repository.update_user_password(user_id, new_password_hash)
+
+    return {"message": "Password updated successfully"}
