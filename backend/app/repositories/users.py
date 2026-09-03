@@ -6,7 +6,10 @@ def get_all_users():
             cur.execute(
                 """
                 SELECT 
-                    *
+                    id,
+                    user_name,
+                    email,
+                    created_at
                 FROM users;
                 """
             )
@@ -37,7 +40,8 @@ def get_user_by_email(email: str):
             cur.execute(
                 """
                 SELECT 
-                    *
+                    email,
+                    password_hash,
                 FROM users
                 WHERE email = %s;
                 """,
