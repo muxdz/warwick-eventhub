@@ -3,7 +3,7 @@ import pytest
 from app.config import settings
 from app.database import get_connection
 from app.main import app
-from app.security import get_current_user
+from app.security import get_current_user, hash_password
 
 if settings.db_name != "eventhub_test":
     raise RuntimeError(
@@ -50,13 +50,13 @@ def seed_society(cur, society_name):
         (society_name,)
     )
 
-def seed_user(cur, user_name, email):
+def seed_user(cur, user_name, email, password_hash):
     cur.execute(
         """
         INSERT INTO users (user_name, email, password_hash)
-        VALUES (%s, %s, 'test_hash');
+        VALUES (%s, %s, %s);
         """,
-        (user_name, email)
+        (user_name, email, password_hash)
     )
 
 def seed_membership(cur, user_id, society_id, role):
@@ -81,8 +81,9 @@ def reset_db():
                 """
             )
 
-            seed_user(cur, "Alice", "alice@example.com")
-            seed_user(cur, "Bob", "bob@example.com")
+            password_hash = hash_password("test_password")
+            seed_user(cur, "Alice", "alice@example.com", password_hash)
+            seed_user(cur, "Bob", "bob@example.com", password_hash)
 
             seed_society(cur, "Cloud Society")
             seed_society(cur, "Engineering Society")
