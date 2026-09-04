@@ -1,7 +1,9 @@
 import os
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_file = os.getenv("ENV_FILE", ".env")
+load_dotenv(env_file, override=True)
 
 class Settings(BaseSettings):
     db_host: str
@@ -12,6 +14,8 @@ class Settings(BaseSettings):
 
     jwt_secret_key: str
     jwt_expire_minutes: str
+
+    cors_origin: str
 
     model_config = SettingsConfigDict(
         env_file =env_file,
