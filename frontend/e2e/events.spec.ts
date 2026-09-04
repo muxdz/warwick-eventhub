@@ -10,15 +10,15 @@ test("user can open the events page", async ({ page }) => {
     await expect(page).toHaveURL(/\/events/);
 
     await page.getByRole("link", {
-        name: /Meet Cloud/i,
+        name: /E2E Cloud Workshop/i,
     }).click();
 
     await expect(
-        page.getByText(/Meet Cloud/i)
+        page.getByText(/E2E Cloud Workshop/i)
     ).toBeVisible();
 
     await expect(
-        page.getByText(/fab/i)
+        page.getByText(/oculus/i)
     ).toBeVisible();
 });
 
