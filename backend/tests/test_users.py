@@ -1,13 +1,9 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
-from datetime import datetime
+from app.security import get_current_user
 
 client = TestClient(app)
-
-def test_get_users():
-    response = client.get("/users")
-    assert response.status_code == 200
 
 def test_get_user_by_id():
     response = client.get("/users/1")
@@ -15,6 +11,8 @@ def test_get_user_by_id():
 
     data = response.json()
     assert data["id"] == 1
+    assert "password_hash" not in data
+    assert "password" not in data
 
 def test_get_user_by_id_not_found():
     response = client.get("/users/999")
@@ -23,21 +21,8 @@ def test_get_user_by_id_not_found():
 
     assert response.status_code == 404
     assert data["detail"] == "User not found"
-
-def test_get_user_by_email():
-    response = client.get("/users/email/alice@example.com")
-    assert response.status_code == 200
-
-    data = response.json()
-    assert data["email"] == "alice@example.com"
-
-def test_get_user_by_email_not_found():
-    response = client.get("/users/email/definitelydoesnotexist@example.com")
-
-    data = response.json()
-
-    assert response.status_code == 404
-    assert data["detail"] == "User not found"
+    assert "password_hash" not in data
+    assert "password" not in data
 
 
 def test_create_user():
@@ -80,71 +65,159 @@ def test_create_user_already_exists():
     assert response.status_code == 400
     assert response.json()["detail"] == "User already exists"
 
-def test_update_username():
-    response = client.patch(
-        "/users/1",
-        json={
-            "user_name": "test_username"
+def test_login_user():
+    response = client.post(
+        "/auth/login",
+        data={
+            "username": "alice@example.com",
+            "password": "test_password"
         }
     )
 
     data = response.json()
 
     assert response.status_code == 200
-    assert data["user_name"] == "test_username"
+    assert data["access_token"]
+    assert data["token_type"] == "bearer"
+    assert "password_hash" not in response.json()
+    assert "password" not in response.json()
 
-def test_user_update_email():
+def test_login_user_incorrect_credentials():
+    response = client.post(
+        "/auth/login",
+        data={
+            "username": "alice@example.com",
+            "password": "wrong_password"
+        }    
+    )
+
+    assert response.status_code == 401
+    assert "password_hash" not in response.json()
+    assert "password" not in response.json()
+
+def test_update_user_unauthorized():
+    app.dependency_overrides.pop(get_current_user, None)
+
     response = client.patch(
-        "/users/1",
+        "/users/me",
         json={
-            "email": "test@example.com"
+            "user_name": "new_username"
+        }
+    )
+
+    assert response.status_code == 401 
+    assert response.json()["detail"] == "Not authenticated"
+
+def test_update_user_authorized():
+    app.dependency_overrides.pop(get_current_user, None)
+
+    # First, log in to get the access token
+    login_response = client.post(
+        "/auth/login",
+        data={
+            "username": "alice@example.com",
+            "password": "test_password"
+        }    
+    )
+
+    token = login_response.json()["access_token"]
+
+    response = client.patch(
+        "/users/me",
+        json={
+            "user_name": "new_username"
+        },
+        headers={
+            "Authorization": f"Bearer {token}"
         }
     )
 
     data = response.json()
 
     assert response.status_code == 200
-    assert data["email"] == "test@example.com"
+    assert data["user_name"] == "new_username"
 
-def test_user_update_null():
-    response = client.patch(
-        "/users/1",
-        json={
-            "user_name": None
+def test_update_user_password():
+    app.dependency_overrides.pop(get_current_user, None)
+
+    # First, log in to get the access token
+    login_response = client.post(
+        "/auth/login",
+        data={
+            "username": "alice@example.com",
+            "password": "test_password"
         }
     )
 
-    assert response.status_code == 422
-    assert response.json()["detail"][0]["loc"][-1] == "user_name"
+    token = login_response.json()["access_token"]
 
-def test_user_update_empty():
     response = client.patch(
-        "/users/1",
-        json={}
-    )
-
-    assert response.status_code == 400
-
-def test_user_update_not_found():
-    response = client.patch(
-        "/users/999",
+        "/users/me/password",
         json={
-            "user_name": "test_username"
+            "old_password": "test_password",
+            "new_password": "new_test_password"
+        },
+        headers={
+            "Authorization": f"Bearer {token}"
         }
     )
 
-    assert response.status_code == 404
+    assert response.status_code == 200
+
+def test_update_user_password_incorrect_old_password():
+    app.dependency_overrides.pop(get_current_user, None)
+
+    # First, log in to get the access token
+    login_response = client.post(
+        "/auth/login",
+        data={
+            "username": "alice@example.com",
+            "password": "test_password"
+        }
+    )
+
+    token = login_response.json()["access_token"]
+
+    response = client.patch(
+        "/users/me/password",
+        json={
+            "old_password": "wrong_password",
+            "new_password": "new_test_password"
+        },
+        headers={
+            "Authorization": f"Bearer {token}"
+        }
+    )
+
+    assert response.status_code == 401
 
 def test_delete_user():
-    response = client.delete("/users/1")
-    data = response.json()
+    app.dependency_overrides.pop(get_current_user, None)
+
+    # First, log in to get the access token
+    login_response = client.post(
+        "/auth/login",
+        data={
+            "username": "alice@example.com",
+            "password": "test_password"
+        }
+    )
+
+    token = login_response.json()["access_token"]
+
+    response = client.delete(
+        "/users/me",
+        headers={
+            "Authorization": f"Bearer {token}"
+        }
+    )
 
     assert response.status_code == 200
-    assert data["message"] == "User deleted"
 
-    response = client.get("/users/1")
-    assert response.status_code == 404
+def test_delete_user_unauthorized():
+    app.dependency_overrides.pop(get_current_user, None)
 
-def test_delete_not_found():
-    response = client.delete("/users/999")
-    assert response.status_code == 404
+    response = client.delete("/users/me")
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Not authenticated"

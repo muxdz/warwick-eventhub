@@ -6,7 +6,10 @@ def get_all_users():
             cur.execute(
                 """
                 SELECT 
-                    *
+                    id,
+                    user_name,
+                    email,
+                    created_at
                 FROM users;
                 """
             )
@@ -37,11 +40,27 @@ def get_user_by_email(email: str):
             cur.execute(
                 """
                 SELECT 
-                    *
+                    id,
+                    email,
+                    password_hash
                 FROM users
                 WHERE email = %s;
                 """,
                 (email,)
+            )
+
+            return cur.fetchone()
+
+def get_user_password_hash(user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT password_hash
+                FROM users
+                WHERE id = %s;
+                """,
+                (user_id,)
             )
 
             return cur.fetchone()
@@ -97,7 +116,11 @@ def update_user(user_id: int, user_updates):
                     UPDATE users
                     SET {update_clause}
                     WHERE id = %s
-                    RETURNING *;
+                    RETURNING
+                        id,
+                        user_name,
+                        email,
+                        created_at;
                     """,
                     (
                         values
@@ -105,3 +128,22 @@ def update_user(user_id: int, user_updates):
                 )
     
                 return cur.fetchone()
+
+def update_user_password(user_id: int, new_password_hash: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE users
+                SET password_hash = %s
+                WHERE id = %s
+                RETURNING
+                    id,
+                    user_name,
+                    email,
+                    created_at;
+                """,
+                (new_password_hash, user_id)
+            )
+
+            return cur.fetchone()

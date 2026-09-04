@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.repositories import users as user_repository
 
-from app.schemas.users import UserCreate, UserUpdate, UserResponse
+from app.schemas.users import UserCreate, UserUpdate, UserResponse, PasswordUpdate
 
 from app.security import hash_password, verify_password, get_current_user, create_access_token, oauth2_scheme
 
@@ -46,25 +46,9 @@ def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
         "token_type": "bearer"
     }
 
-@users_router.get("/users")
-def get_all_users():
-    return user_repository.get_all_users()
-
 @users_router.get("/users/{user_id}")
 def get_user_by_id(user_id: int):
     user = user_repository.get_user_by_id(user_id)
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
-
-    return user
-
-@users_router.get("/users/email/{email}")
-def get_user_by_email(email: str):
-    user = user_repository.get_user_by_email(email)
 
     if not user:
         raise HTTPException(
@@ -89,8 +73,9 @@ def create_user(user_data: UserCreate):
 
     return user_repository.create_user(user_data, password_hash)
 
-@users_router.delete("/users/{user_id}")
-def delete_user(user_id: int):
+@users_router.delete("/users/me")
+def delete_user(current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
     deleted_user = user_repository.delete_user(user_id)
 
     if not deleted_user:
@@ -101,8 +86,9 @@ def delete_user(user_id: int):
 
     return {"message": "User deleted"}
 
-@users_router.patch("/users/{user_id}", status_code=200)
-def update_user(user_id: int, user_data: UserUpdate):
+@users_router.patch("/users/me", status_code=200)
+def update_user(user_data: UserUpdate, current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
     updates = user_data.model_dump(exclude_unset=True)
 
     if not updates:
@@ -120,3 +106,25 @@ def update_user(user_id: int, user_data: UserUpdate):
         )
 
     return updated_user
+
+@users_router.patch("/users/me/password", status_code=200)
+def update_password(password_data: PasswordUpdate, current_user = Depends(get_current_user)):
+    user_id = current_user["user_id"]
+    user = user_repository.get_user_password_hash(user_id)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    if not verify_password(password_data.old_password, user["password_hash"]):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect old password"
+        )
+
+    new_password_hash = hash_password(password_data.new_password)
+    updated_user = user_repository.update_user_password(user_id, new_password_hash)
+
+    return {"message": "Password updated successfully"}
