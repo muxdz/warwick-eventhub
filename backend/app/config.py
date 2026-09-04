@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_expire_minutes: str
 
+    cors_origin: str
+
     model_config = SettingsConfigDict(
         env_file =env_file,
         extra="ignore"

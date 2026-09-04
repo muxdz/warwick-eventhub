@@ -7,6 +7,8 @@ from app.routers.societies import societies_router
 from app.routers.memberships import membership_routers
 from app.routers.bookmarks import bookmarks_router
 
+from app.config import settings
+
 app = FastAPI()
 
 app.include_router(events_router)
@@ -16,7 +18,8 @@ app.include_router(membership_routers)
 app.include_router(bookmarks_router)
 
 origins = [
-    "http://localhost:3000",
+    origin.strip() 
+    for origin in settings.cors_origin.split(",")
 ]
 
 app.add_middleware(
