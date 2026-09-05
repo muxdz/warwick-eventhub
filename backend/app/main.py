@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import psycopg
 
 from app.routers.events import events_router
 from app.routers.users import users_router
@@ -8,6 +9,8 @@ from app.routers.memberships import membership_routers
 from app.routers.bookmarks import bookmarks_router
 
 from app.config import settings
+
+from app.repositories.ready import check_ready
 
 app = FastAPI()
 
@@ -33,3 +36,14 @@ app.add_middleware(
 @app.get("/health")
 def get_health():
     return {"status": "ok"}
+
+@app.get("/ready")
+def get_ready():
+    try:
+        check_ready()
+        return {"status": "ready"}
+    except psycopg.Error:
+        raise HTTPException(
+            status_code=503,
+            detail="Database unavailable",
+        )
