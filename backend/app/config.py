@@ -12,8 +12,11 @@ class Settings(BaseSettings):
     db_user: str
     db_password: str
 
+    db_connect_timeout: int
+    db_ssl_mode: str
+
     jwt_secret_key: str
-    jwt_expire_minutes: str
+    jwt_expire_minutes: int
 
     cors_origin: str
 
