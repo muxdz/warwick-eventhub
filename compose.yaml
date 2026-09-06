@@ -2,6 +2,7 @@ services:
   api:
     build: 
       context: ./backend
+      target: production
       dockerfile: ./Dockerfile
     ports:
       - "8000:8000"
@@ -31,6 +32,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: test
     command: sh -c "alembic upgrade head && python -m pytest -v"
     env_file:
       - .env.test
