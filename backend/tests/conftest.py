@@ -4,6 +4,7 @@ from app.config import settings
 from app.database import get_connection
 from app.main import app
 from app.security import get_current_user, hash_password
+from app.rate_limit import AuthRateLimitMiddleware
 
 if settings.db_name != "eventhub_test":
     raise RuntimeError(
@@ -70,6 +71,11 @@ def seed_membership(cur, user_id, society_id, role):
 
 @pytest.fixture(autouse=True)
 def reset_db():
+    middleware = app.middleware_stack
+    while middleware is not None:
+        if isinstance(middleware, AuthRateLimitMiddleware):
+            middleware.attempts.clear()
+        middleware = getattr(middleware, "app", None)
     app.dependency_overrides[get_current_user] = lambda: {"user_id": "1"}
 
     with get_connection() as conn:

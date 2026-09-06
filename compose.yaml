@@ -2,6 +2,7 @@ services:
   api:
     build: 
       context: ./backend
+      target: production
       dockerfile: ./Dockerfile
     ports:
       - "8000:8000"
@@ -10,6 +11,18 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   db:
     image: postgres:18
@@ -31,6 +44,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: test
     command: sh -c "alembic upgrade head && python -m pytest -v"
     env_file:
       - .env.test

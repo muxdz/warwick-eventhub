@@ -14,7 +14,7 @@ password_hash = PasswordHash.recommended()
 algorithm = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 secret_key = settings.jwt_secret_key
-minutes = int(settings.jwt_expire_minutes)
+minutes = settings.jwt_expire_minutes
 
 def hash_password(password: str) -> str:
     return password_hash.hash(password)

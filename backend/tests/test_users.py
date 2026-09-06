@@ -31,7 +31,7 @@ def test_create_user():
         json={
             "user_name": "test_username",
             "email": "test@example.com",
-            "password": "test_password"
+            "password": "Test_password!"
         }
     )
     data = response.json()
@@ -58,7 +58,7 @@ def test_create_user_already_exists():
         json={
             "user_name": "Alice",
             "email": "alice@example.com",
-            "password": "test_password"
+            "password": "Test_password!"
         }
     )
 
