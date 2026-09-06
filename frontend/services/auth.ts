@@ -81,6 +81,15 @@ export async function Register(user_name: string, email: string, password: strin
         }
     );
 
+    if (!response.ok) {
+        const error = await response.json();
+        const detail = error.detail;
+        const message = Array.isArray(detail)
+            ? detail.map((item: { msg: string }) => item.msg.replace(/^Value error, /, "")).join(" ")
+            : typeof detail === "string" ? detail : "Registration failed";
+        throw new ApiError(message, response.status);
+    }
+
     return response;
 }
 

@@ -6,6 +6,13 @@ import { Register } from "@/services/auth";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/services/errors";
 
+const passwordRequirements = [
+    { label: "At least 10 characters", test: (value: string) => Array.from(value).length >= 10 },
+    { label: "At least one uppercase letter (A-Z)", test: (value: string) => /[A-Z]/.test(value) },
+    { label: "At least one lowercase letter (a-z)", test: (value: string) => /[a-z]/.test(value) },
+    { label: "At least one symbol (e.g. !, @, #)", test: (value: string) => /[\p{P}\p{S}]/u.test(value) },
+];
+
 export default function RegisterForm() {
     const [formData, setFormData] = useState({
         username: "",
@@ -32,26 +39,23 @@ export default function RegisterForm() {
             const password = form.get("password") as string;
             const confirm_password = form.get("confirm_password") as string;
 
+            const missing = passwordRequirements.filter(requirement => !requirement.test(password));
+            if (missing.length) {
+                throw new ApiError(`Password must contain ${missing.map(requirement => requirement.label.toLowerCase()).join("; ")}.`, 422);
+            }
+
             if (password !== confirm_password) {
                 throw new ApiError("Passwords do not match", 400);
             }
 
-            const response = await Register(username, email, password);
-
-            if (response.status === 400) {
-                throw new ApiError("User already exists", 400);
-            }
+            await Register(username, email, password);
 
             await login(email, password);
             router.push("/profile");
         } catch (error) {
-            if (error instanceof ApiError) {
-                if (error.status === 400) {
-                    setError("User already exists");
-                }  else {
-                    setError("An error occurred while registering");
-                }
-            }
+            setError(error instanceof ApiError && error.status < 500
+                ? error.message
+                : "An error occurred while registering. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -85,9 +89,14 @@ export default function RegisterForm() {
                 name="password"
                 type="password"
                 placeholder="Password"
+                aria-describedby="password-requirements"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
+            <ul id="password-requirements" className="list-disc pl-5 text-sm text-slate-600">
+                {passwordRequirements.map(requirement => <li key={requirement.label}>{requirement.label}</li>)}
+            </ul>
             <label htmlFor="confirm_password">Confirm Password</label>
             <input
                 id="confirm_password"
