@@ -13,3 +13,24 @@ Deployment order:
 5. Verify application health/readiness.
 
 If the migration task fails, do not deploy the new API revision.
+
+## Production secrets
+
+Production secrets must not be stored in the repository or Docker image.
+
+The following values will be stored in AWS Secrets Manager:
+
+- PostgreSQL database password
+- JWT signing secret
+
+ECS will inject these secrets into the backend task as environment variables.
+
+FastAPI will continue to access them through the existing Settings configuration.
+
+Flow:
+
+AWS Secrets Manager
+→ ECS task definition
+→ environment variables
+→ Pydantic Settings
+→ FastAPI
