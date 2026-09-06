@@ -11,6 +11,7 @@ from app.routers.bookmarks import bookmarks_router
 from app.config import settings
 
 from app.repositories.ready import check_ready
+from app.rate_limit import AuthRateLimitMiddleware
 
 app = FastAPI()
 
@@ -24,6 +25,8 @@ origins = [
     origin.strip() 
     for origin in settings.cors_origin.split(",")
 ]
+
+app.add_middleware(AuthRateLimitMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

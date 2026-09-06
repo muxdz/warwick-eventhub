@@ -50,10 +50,13 @@ test("explains mismatched passwords", async () => {
     expect(register).not.toHaveBeenCalled();
 });
 
-test("displays server rejection without logging in", async () => {
-    register.mockRejectedValue(new ApiError("Password must contain at least one symbol.", 422));
+test.each([
+    [422, "Password must contain at least one symbol."],
+    [429, "Too many registration attempts. Please try again in 60 seconds."],
+])("displays server rejection %s without logging in", async (status, message) => {
+    register.mockRejectedValue(new ApiError(message, status));
     submit("Abcdefghi!");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Password must contain at least one symbol.");
+    expect(await screen.findByRole("alert")).toHaveTextContent(message);
     expect(login).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
 });

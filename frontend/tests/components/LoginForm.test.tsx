@@ -182,3 +182,13 @@ test("shows generic error when server fails", async () => {
 
     expect(mockPush).not.toHaveBeenCalled();
 })
+test("shows the rate limit retry message", async () => {
+    mockLogin.mockRejectedValueOnce(new ApiError("Too many login attempts. Please try again in 60 seconds.", 429));
+    render(<LoginForm />);
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.click(screen.getByRole("button", { name: /login/i }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Too many login attempts. Please try again in 60 seconds.");
+    expect(mockPush).not.toHaveBeenCalled();
+});

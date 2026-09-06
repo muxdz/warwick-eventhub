@@ -70,3 +70,15 @@ docker compose up --build
 Docker starts API + PostgreSQL
       ↓
 Open http://localhost:8000/docs
+### Authentication rate limits
+
+Login and registration each allow 10 POST requests per IP address in a rolling
+60-second window, including unsuccessful requests. Further attempts return HTTP
+429 with a `Retry-After` header and a message displayed by the form. Rejected
+attempts do not extend the window.
+
+The limiter stores counters in memory for the current single-worker Uvicorn
+setup; restarting the backend resets them. Use a shared counter store before
+running multiple workers or backend replicas. Client IPs come from the ASGI
+connection information; when deploying behind a proxy, configure Uvicorn to
+trust forwarded headers only from that proxy.
