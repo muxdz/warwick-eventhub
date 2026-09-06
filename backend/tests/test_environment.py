@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 import pytest
 
 from app.main import app

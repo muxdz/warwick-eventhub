@@ -10,5 +10,9 @@ def get_connection():
         dbname=settings.db_name,
         user=settings.db_user,
         password=settings.db_password,
+
+        connect_timeout=settings.db_connect_timeout,
+        sslmode=settings.db_ssl_mode,
+        
         row_factory=dict_row
     )
