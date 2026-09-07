@@ -11,7 +11,10 @@ export type EventUpdate = {
 
 export async function GetEvents(): Promise<Event[] | null> {
     const reponse = await fetch (
-        `${process.env.NEXT_PUBLIC_API_URL}/events`
+        `${process.env.NEXT_PUBLIC_API_URL}/events`,
+        {
+            cache: "no-cache"
+        }
     );
 
     if (reponse.status === 404) {
