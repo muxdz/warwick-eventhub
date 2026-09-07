@@ -4,13 +4,13 @@ export default defineConfig({
     testDir: './e2e',
 
     webServer: {
-        command: "npm run dev",
+        command: "npm start",
         url: "http://localhost:3000",
-        reuseExistingServer: true,
+        reuseExistingServer: false,
     },
 
     use: {
-        baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
+        baseURL: 'http://localhost:3000',
         trace: 'on-first-retry',
     },
 
