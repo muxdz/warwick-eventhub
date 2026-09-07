@@ -1,3 +1,5 @@
+import pytest
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -155,7 +157,7 @@ def test_update_user_password():
         "/users/me/password",
         json={
             "old_password": "test_password",
-            "new_password": "new_test_password"
+            "new_password": "New_test_password!"
         },
         headers={
             "Authorization": f"Bearer {token}"
@@ -182,7 +184,7 @@ def test_update_user_password_incorrect_old_password():
         "/users/me/password",
         json={
             "old_password": "wrong_password",
-            "new_password": "new_test_password"
+            "new_password": "New_test_password!"
         },
         headers={
             "Authorization": f"Bearer {token}"
@@ -221,3 +223,30 @@ def test_delete_user_unauthorized():
 
     assert response.status_code == 401
     assert response.json()["detail"] == "Not authenticated"
+
+
+@pytest.mark.parametrize("password,reason", [
+    ("Short!", "at least 10 characters"),
+    ("lowercase!", "uppercase letter"),
+    ("UPPERCASE!", "lowercase letter"),
+    ("NoSymbols1", "one symbol"),
+])
+def test_authenticated_user_cannot_change_to_weak_password(password, reason):
+    app.dependency_overrides.pop(get_current_user, None)
+    credentials = {"username": "alice@example.com", "password": "test_password"}
+    login_response = client.post("/auth/login", data=credentials)
+    assert login_response.status_code == 200
+    token = login_response.json()["access_token"]
+
+    response = client.patch(
+        "/users/me/password",
+        json={"old_password": "test_password", "new_password": password},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 422
+    errors = response.json()["detail"]
+    assert any(error["loc"] == ["body", "new_password"] and reason in error["msg"] for error in errors)
+    # A rejected change must leave the original credentials working.
+    assert client.post("/auth/login", data=credentials).status_code == 200
+    assert client.post("/auth/login", data={**credentials, "password": password}).status_code == 401

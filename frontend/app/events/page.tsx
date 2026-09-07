@@ -7,6 +7,8 @@ import { GetBookmarks } from "@/services/bookmarks";
 import type { Event } from "@/types/events";
 import { useAuth } from "@/context/AuthContext";
 
+export const dynamic = "force-dynamic";
+
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[] | null>(null);
     const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);

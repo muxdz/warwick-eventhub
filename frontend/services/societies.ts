@@ -3,7 +3,10 @@ import { ApiError } from "./errors";
 
 export async function GetSocieties(): Promise<Society[]> {
     const reponse = await fetch (
-        `${process.env.NEXT_PUBLIC_API_URL}/societies`
+        `${process.env.NEXT_PUBLIC_API_URL}/societies`,
+        {
+            cache: "no-cache"
+        }
     );
 
     if (!reponse.ok) {
