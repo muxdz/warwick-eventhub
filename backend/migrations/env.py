@@ -35,6 +35,10 @@ def get_database_url():
         host=settings.db_host,
         port=int(settings.db_port),
         database=settings.db_name,
+        query={
+            "sslmode": settings.db_ssl_mode,
+            "connect_timeout": str(settings.db_connect_timeout),
+        },
     )
 
 
