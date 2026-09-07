@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .env
 .git/
+
+.env*
+!.env.example
+!.env.e2e.example
