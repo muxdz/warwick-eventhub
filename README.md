@@ -15,7 +15,7 @@ Python runtime and test dependencies live in `backend/requirements.txt` and
 
 ## Prerequisites and environment
 
-Use Python 3.14, Node.js 22 (with npm), Docker Engine with Compose v2, and Git.
+Use Python 3.14, Node.js 22.22.2 or newer in the 22.x line (with npm), Docker Engine with Compose v2, and Git.
 Run the following from the repository root of a fresh clone:
 
 ```bash
@@ -32,6 +32,9 @@ npm ci
 npx playwright install --with-deps chromium
 cd ..
 ```
+
+On Linux, `--with-deps` installs system libraries and may request sudo. If those
+libraries are already installed, use `npx playwright install chromium` instead.
 
 Examples contain local-only credentials. Replace passwords and generate a unique
 JWT secret before deployment. Never commit real environment files.

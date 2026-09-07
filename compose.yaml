@@ -51,7 +51,6 @@ services:
       - .env.test
     depends_on:
       db-test:
-    profiles: [test]
         condition: service_healthy
 
   db-test:
