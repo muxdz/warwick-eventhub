@@ -30,9 +30,19 @@ jobs:
         postgres:
             image: postgres:18
             env:
+                POSTGRES_HOST: localhost
+                POSTGRES_PORT: 5432
+                POSTGRES_DB: eventhub_test
                 POSTGRES_USER: postgres
                 POSTGRES_PASSWORD: postgres
-                POSTGRES_DB: eventhub_test
+
+                CORS_ORIGIN: http://localhost:3000
+                JWT_SECRET_KEY: test-secret-key-only-for-ci
+                JWT_EXPIRE_MINUTES: 30
+
+                DB_CONNECT_TIMEOUT: 5
+                DB_SSL_MODE: disable
+                
             ports:
               - 5432:5432
             options: >-
