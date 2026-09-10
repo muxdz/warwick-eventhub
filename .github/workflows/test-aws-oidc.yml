@@ -12,6 +12,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Show actual OIDC claims
+        shell: bash
+        run: |
+          TOKEN_JSON=$(curl -sS \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")
+
+          ID_TOKEN=$(echo "$TOKEN_JSON" | jq -r '.value')
+
+          PAYLOAD=$(echo "$ID_TOKEN" \
+            | cut -d '.' -f2 \
+            | tr '_-' '/+' \
+            | awk '{l=length($0)%4; if(l==2) $0=$0"=="; else if(l==3) $0=$0"="; print}' \
+            | base64 -d)
+
+          echo "$PAYLOAD" | jq '{
+            iss,
+            aud,
+            sub,
+            repository,
+            repository_owner,
+            repository_owner_id,
+            repository_id,
+            ref,
+            event_name,
+            environment,
+            job_workflow_ref
+          }'
+    
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
