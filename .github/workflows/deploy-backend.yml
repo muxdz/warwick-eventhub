@@ -26,23 +26,30 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: eventhub_test
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+
+        DB_CONNECT_TIMEOUT: 5
+        DB_SSLMODE: disable
+
+        JWT_SECRET_KEY: test-secret-key-only-for-ci
+        JWT_EXPIRE_MINUTES: 30
+
+        CORS_ORIGINS: '["http://localhost:3000"]'
+
+        ENV_FILE: .env.test
+
     services:
         postgres:
             image: postgres:18
             env:
-                POSTGRES_HOST: localhost
-                POSTGRES_PORT: 5432
-                POSTGRES_DB: eventhub_test
                 POSTGRES_USER: postgres
                 POSTGRES_PASSWORD: postgres
-
-                CORS_ORIGIN: http://localhost:3000
-                JWT_SECRET_KEY: test-secret-key-only-for-ci
-                JWT_EXPIRE_MINUTES: 30
-
-                DB_CONNECT_TIMEOUT: 5
-                DB_SSL_MODE: disable
-                
+                POSTGRES_DB: eventhub_test
             ports:
               - 5432:5432
             options: >-
