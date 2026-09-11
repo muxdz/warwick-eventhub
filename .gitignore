@@ -12,3 +12,19 @@ playwright-report/
 .env.*
 !.env.example
 !.env.*.example
+
+# Terraform working directory
+terraform.tfstate
+terraform.tfstate.*
+.terraform/
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Terraform plans
+*.tfplan
+
+# Terraform crash logs
+crash.log
+crash.*.log
